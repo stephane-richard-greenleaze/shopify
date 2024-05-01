@@ -3,7 +3,7 @@
 client_id = "461cf2c81050c802a8eb865615750cf1"
 name = "greenlease"
 handle = "greenlease"
-application_url = "https://sanyo-compilation-ridge-agreed.trycloudflare.com"
+application_url = "https://greenlease.kodkodkod.studio"
 embedded = true
 
 [build]
@@ -17,9 +17,9 @@ scopes = "read_checkouts,read_orders,unauthenticated_read_checkouts,unauthentica
 
 [auth]
 redirect_urls = [
-  "https://sanyo-compilation-ridge-agreed.trycloudflare.com/auth/callback",
-  "https://sanyo-compilation-ridge-agreed.trycloudflare.com/auth/shopify/callback",
-  "https://sanyo-compilation-ridge-agreed.trycloudflare.com/api/auth/callback"
+  "https://greenlease.kodkodkod.studio/auth/callback",
+  "https://greenlease.kodkodkod.studio/auth/shopify/callback",
+  "https://greenlease.kodkodkod.studio/api/auth/callback"
 ]
 
 [webhooks]
