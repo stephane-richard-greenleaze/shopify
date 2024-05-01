@@ -72,13 +72,13 @@ export default function Index() {
             <Card>
               <BlockStack gap="500">
                 <BlockStack gap="200">
-                  <Text as="h2" variant="headingMd">
-                  Welcome to GreenLease app 🎉
+                  <Text as="h1" variant="headingMd">
+                  Bienvenue dans votre app Greenlease 🎉
                   </Text>
 
                 </BlockStack>
                 <BlockStack gap="200">
-                  <h1>Enter Your API Key</h1>
+                  <h2 style={{fontSize:20, fontWeight:  'bold', paddingBottom : 30}}>Configuration</h2>
                   {actionData?.error && <p style={{ color: 'red' }}>{actionData.error}</p>}
                   {actionData?.success && <p style={{ color: 'green' }}>{actionData.success}</p>}
                   <Form method="post">
@@ -86,11 +86,24 @@ export default function Index() {
                         type="text"
                         name="apiKey"
                         id="apiKey"
-                        placeholder="Enter API key"
+                        placeholder="Enter votre clé API"
                         required
+                        style={{"padding": 5}}
                         defaultValue={apiKey}  // Set the value from the loader data
                     />
-                    <button type="submit">Save API Key</button>
+
+                    <div style={{"paddingTop": 20,paddingBottom: 20}}>
+                      <input
+                          type="text"
+                          style={{"padding": 5}}
+                          name="deliveryFee"
+                          id="deliveryFee"
+                          placeholder="Enter votre frais de livraison"
+                          required
+                      />
+                    </div>
+
+                    <button type="submit" style={{padding: 10, background: '#0D5537', color : 'white', borderRadius: 20}}>Enregistrer vos informations</button>
                   </Form>
                 </BlockStack>
 
