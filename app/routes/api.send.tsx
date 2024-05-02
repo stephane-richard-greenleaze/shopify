@@ -48,7 +48,7 @@ export async function action({
             data: orderData,
         });
         const res = await orderResponse.json();
-        console.log(res);
+        const token_checkout = res.checkout.token;
 
 
         const uniq = generateUniq();
@@ -78,7 +78,7 @@ export async function action({
                 }
             ],
             "cartId": getRandomArbitrary(1,99999), // peux pas string
-            "cartSecureKey": cartContents.token,
+            "cartSecureKey": token_checkout,
             "totalInitialFees": 20 // todo : take from param app
         }
 

@@ -22,89 +22,17 @@ export async function loader({ request }) {
     //const shopUrl = session.get('shopUrl');
     console.log(session);
     //console.log(admin.rest.params.config);
-
-
-	const response = await storefront.graphql(
-            `#graphql
-        query getCartById($cartId: ID!) {
-            cart(id: $cartId) {
-                id
-                createdAt
-                updatedAt
-                lines(first: 5) {
-                    edges {
-                        node {
-                            merchandise {
-                                ... on ProductVariant {
-                                    id
-                                    product {
-                                        title
-                                    }
-                                }
-                            }
-                            quantity
-                        }
-                    }
-                }
-                cost {
-                    totalAmount {
-                        amount
-                        currencyCode
-                    }
-                }
-                buyerIdentity {
-                    email
-                    phone
-                    customer {
-                        id
-                    }
-                }
-            }
-        }`,
-        {
-            variables: {
-                cartId: "gid://shopify/Cart/" + cartSecureKey
-            },
-        }
-	);
-
-    const responseJson = await response.json();
-    console.log(responseJson);
-
-
-
-    const orderData = {
-        "order": {
-            "line_items": [{
-                "variant_id": 1234567890, // Replace with actual variant ID
-                "quantity": 1
-            }],
-            "customer": {
-                "id": 1234567890 // Replace with actual customer ID
-            },
-            "financial_status": "paid",
-            "transactions": [{
-                "kind": "sale",
-                "status": "success",
-                "amount": "199.99"
-            }]
-        }
-    };
-
-    return json({ error: 'Failed to create order' }, { status: 200, session: session });
-
     try {
         const orderResponse = await admin.rest.post({
-            path: 'admin/api/2024-04/orders.json',
-            data: orderData,
+            path: `admin/api/2024-04/checkouts/${cartSecureKey}/complete.json`,
+            data: {},
         });
         console.log('Order created:', orderResponse);
-        return json(orderResponse.body);
+        return json({status: 200}); // redirec to sucess
     } catch (error) {
         console.error('Failed to create order:', error);
         return json({ error: 'Failed to create order' }, { status: 500, err: error, session: session });
     }
 
-
-    return json({ error: session });
+    
 }
