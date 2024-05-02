@@ -47,10 +47,11 @@ export async function action({
             path: 'admin/api/2024-04/checkouts.json',
             data: orderData,
         });
-        console.log(orderResponse.body);
+        const res = await orderResponse.json();
+        console.log(res);
 
 
-            const uniq = generateUniq();
+        const uniq = generateUniq();
         const price = cartContents.items[0].line_price / 100;
         var formattedPrice = formatNumberAsFloat(price);
         const payload = {
