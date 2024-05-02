@@ -30,92 +30,28 @@ export async function action({
     //var base_url = process.env.SHOPIFY_APP_URL + "/api/redirect";
     var base_url = `https://${session.shop}` + "/apps/greenlease-proxy/api/redirect";
     console.log('base_url', base_url);
-    // const response = await storefront.graphql(
-    //         `#graphql
-    //     query {
-    //         cart(id: "${data.cartContents.token}") {
-    //             id
-    //             checkoutUrl
-    //             createdAt
-    //             updatedAt
-    //             lines(first: 5) {
-    //                 edges {
-    //                     node {
-    //                         merchandise {
-    //                             ... on ProductVariant {
-    //                                 product {
-    //                                     title
-    //                                 }
-    //                                 title
-    //                                 priceV2 {
-    //                                     amount
-    //                                     currencyCode
-    //                                 }
-    //                             }
-    //                         }
-    //                         quantity
-    //                     }
-    //                 }
-    //             }
-    //             estimatedCost {
-    //                 subtotalAmount {
-    //                     amount
-    //                     currencyCode
-    //                 }
-    //                 totalAmount {
-    //                     amount
-    //                     currencyCode
-    //                 }
-    //             }
-    //         }
-    //     }
-    //     `
-    // );
-    // console.log(response);
-	// const response = await storefront.graphql(
-    //         `#graphql
-    //     mutation createCart($lineItems: [CartLineInput!]!) {
-    //         cartCreate(input: {lines: $lineItems}) {
-    //             cart {
-    //                 id
-    //                 createdAt
-    //                 lines(first: 5) {
-    //                     edges {
-    //                         node {
-    //                             id
-    //                             quantity
-    //                             merchandise {
-    //                                 ... on ProductVariant {
-    //                                     id
-    //                                     product {
-    //                                         title
-    //                                     }
-    //                                 }
-    //                             }
-    //                         }
-    //                     }
-    //                 }
-    //                 estimatedCost {
-    //                     totalAmount {
-    //                         amount
-    //                         currencyCode
-    //                     }
-    //                 }
-    //             }
-    //             userErrors {
-    //                 field
-    //                 message
-    //             }
-    //         }
-    //     }`,
-    //     {
-    //         lineItems: [
-    //             { merchandiseId: "gid://shopify/ProductVariant/1234567890", quantity: 1 }
-    //         ]
-    //     }
-	// );
 
 
+
+    try {
+        const lineItems = cartContents.items.map(item => ({
+            variant_id: item.variant_id,
+            quantity: item.quantity
+        }));
+        const orderData = {
+            "checkout": {
+                "line_items": lineItems,
+            }
+        };
+        const orderResponse = await admin.rest.post({
+            path: 'admin/api/2024-04/checkouts.json',
+            data: orderData,
+        });
+        console.log('Order created:', orderResponse);
+
+    } catch (error) {
+        console.error('Failed to create order:', error);
+    }
 
     try {
         const uniq = generateUniq();

@@ -21,7 +21,7 @@ export async function loader({ request }) {
 
     //const shopUrl = session.get('shopUrl');
     console.log(session);
-    console.log(admin.rest.params.config);
+    //console.log(admin.rest.params.config);
 
 
 	const response = await storefront.graphql(
