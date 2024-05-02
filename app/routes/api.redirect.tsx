@@ -8,10 +8,70 @@ export async function loader({ request }) {
     //const session = await getSession(request.headers.get('Cookie'));
     const {session, admin, storefront} = await authenticate.public.appProxy(request);
 
-    console.log(admin);
+    const url = new URL(request.url);
+
+	// Get the 'cart-secure-key' query parameter
+    const cartSecureKey = url.searchParams.get('cart-secure-key');
+
+    console.log(cartSecureKey);
+    if (!cartSecureKey) {
+        // Handle the case where the cart-secure-key is not provided
+        throw new Response('Cart secure key is required', { status: 400 });
+    }
+
     //const shopUrl = session.get('shopUrl');
     console.log(session);
     console.log(admin.rest.params.config);
+
+
+	const response = await storefront.graphql(
+            `#graphql
+        query getCartById($cartId: ID!) {
+            cart(id: $cartId) {
+                id
+                createdAt
+                updatedAt
+                lines(first: 5) {
+                    edges {
+                        node {
+                            merchandise {
+                                ... on ProductVariant {
+                                    id
+                                    product {
+                                        title
+                                    }
+                                }
+                            }
+                            quantity
+                        }
+                    }
+                }
+                cost {
+                    totalAmount {
+                        amount
+                        currencyCode
+                    }
+                }
+                buyerIdentity {
+                    email
+                    phone
+                    customer {
+                        id
+                    }
+                }
+            }
+        }`,
+        {
+            variables: {
+                cartId: "gid://shopify/Cart/" + cartSecureKey
+            },
+        }
+	);
+
+    const responseJson = await response.json();
+    console.log(responseJson);
+
+
 
     const orderData = {
         "order": {
@@ -30,6 +90,8 @@ export async function loader({ request }) {
             }]
         }
     };
+
+    return json({ error: 'Failed to create order' }, { status: 200, session: session });
 
     try {
         const orderResponse = await admin.rest.post({
