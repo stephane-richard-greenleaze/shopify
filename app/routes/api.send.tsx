@@ -47,9 +47,8 @@ export async function action({
             path: 'admin/api/2024-04/checkouts.json',
             data: orderData,
         });
-        console.log('Order created:', orderResponse);
-        const res = json(orderResponse.body);
-        console.log(res);
+        console.log(orderResponse.body);
+
 
             const uniq = generateUniq();
         const price = cartContents.items[0].line_price / 100;
