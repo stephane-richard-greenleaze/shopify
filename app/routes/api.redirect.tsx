@@ -10,7 +10,7 @@ export async function loader({ request }) {
 
     console.log(admin);
     //const shopUrl = session.get('shopUrl');
-   // console.log(session);
+    console.log(session);
     console.log(admin.rest.params.config);
 
     const orderData = {

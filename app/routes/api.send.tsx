@@ -28,7 +28,7 @@ export async function action({
     console.log('-----try retrieve cart---', JSON.parse(data.cartContents))
     const cartContents = JSON.parse(data.cartContents);
     //var base_url = process.env.SHOPIFY_APP_URL + "/api/redirect";
-    var base_url = `https://${session.shop}` + "/apps/greenlease-proxy/redirect";
+    var base_url = `https://${session.shop}` + "/apps/greenlease-proxy/api/redirect";
     console.log('base_url', base_url);
     // const response = await storefront.graphql(
     //         `#graphql
