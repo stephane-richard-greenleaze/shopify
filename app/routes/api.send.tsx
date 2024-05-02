@@ -48,13 +48,10 @@ export async function action({
             data: orderData,
         });
         console.log('Order created:', orderResponse);
+        const res = json(orderResponse.body);
+        console.log(res);
 
-    } catch (error) {
-        console.error('Failed to create order:', error);
-    }
-
-    try {
-        const uniq = generateUniq();
+            const uniq = generateUniq();
         const price = cartContents.items[0].line_price / 100;
         var formattedPrice = formatNumberAsFloat(price);
         const payload = {
@@ -98,10 +95,12 @@ export async function action({
         });
         console.log('response is OK?', responseTransac.status);
 
-        return json({'status' : 'ok','uniq':uniq, 'redirectUrl': 'https://pay.greenleaze.com/order/step-1?transaction_id=trans_'+uniq }); // Assuming you have a function named json() that handles the response.
+        return json({'status' : 'ok','uniq':uniq, 'redirectUrl': 'https://pay.greenleaze.com/order/step-1?transaction_id=trans_'+uniq });
+
     } catch (error) {
-        console.error('Failed to fetch data:', error);
+        console.error('Failed to create order:', error);
         return json({ error: error.message }); // Properly handle and return the error case.
     }
+
 
 }
