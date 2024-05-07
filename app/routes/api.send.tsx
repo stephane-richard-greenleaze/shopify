@@ -58,7 +58,7 @@ export async function action({
             "transactionId": `trans_${uniq}`,
             "shop": {
                 "urls": {
-                    "shop": "cdiscount.com", //session.shop,
+                    "shop": `${session.shop}`, //session.shop,
                     "success": base_url +"?success=true",
                     "failure": base_url +"?success=false"
                 },
