@@ -293,6 +293,7 @@ console.log(minPricesByDuration);
 				Object.keys(minPricesByDuration).forEach((duration, index) => {
 					const button = document.createElement('button');
 					button.className = 'open-modal';
+					button.style = 'color:black';
 					button.setAttribute('data-duration', duration);
 					button.setAttribute('data-value', index);
 					button.innerHTML = `<span style="margin-right:30px">${duration} mois</span> ${minPricesByDuration[duration].minPrice}€ / mois`;

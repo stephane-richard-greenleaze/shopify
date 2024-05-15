@@ -1,19 +1,19 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
-client_id = "461cf2c81050c802a8eb865615750cf1"
-name = "greenlease"
-handle = "greenlease"
+client_id = "2f0f442e3162441505cdbbabdfcc6d68"
+name = "GreenLeaze"
+handle = "greenleaze-1"
 application_url = "https://greenlease.kodkodkod.studio"
 embedded = true
 
 [build]
 automatically_update_urls_on_dev = true
-dev_store_url = "quickstart-682bebea.myshopify.com"
+dev_store_url = "quickstart-f9bbbd39.myshopify.com"
 include_config_on_deploy = true
 
 [access_scopes]
 # Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
-scopes = "read_checkouts,read_orders,unauthenticated_read_checkouts,unauthenticated_write_checkouts,write_checkouts,write_orders,write_products"
+scopes = ""
 
 [auth]
 redirect_urls = [

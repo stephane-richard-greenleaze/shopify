@@ -287,3 +287,16 @@ This template uses [Remix](https://remix.run). The following Shopify tools are a
 - [App extensions](https://shopify.dev/docs/apps/app-extensions/list)
 - [Shopify Functions](https://shopify.dev/docs/api/functions)
 - [Getting started with internationalizing your app](https://shopify.dev/docs/apps/best-practices/internationalization/getting-started)
+
+PROD
+shopify app env show
+
+pm2 start npm --name "greenlease" -- start
+export SHOPIFY_APP_URL="https://greenlease.kodkodkod.studio"
+export SHOPIFY_API_KEY=461cf2c81050c802a8eb865615750cf1
+export SHOPIFY_API_SECRET=319914f7124e2a6c9878eed9c1ff2911
+export SHOPIFY_GREENLEASE_EXTENSION_ID=517868fc-40f9-40ac-a3b2-7772f341f5ee
+export PORT=4000
+ERR DB PRISMA
+RUN npx prisma generate
+RUN npx prisma migrate deploy
