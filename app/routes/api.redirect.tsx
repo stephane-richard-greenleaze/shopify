@@ -34,5 +34,5 @@ export async function loader({ request }) {
         return json({ error: 'Failed to create order' }, { status: 500, err: error, session: session });
     }
 
-    
+
 }

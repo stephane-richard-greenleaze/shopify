@@ -293,9 +293,9 @@ shopify app env show
 
 pm2 start npm --name "greenlease" -- start
 export SHOPIFY_APP_URL="https://greenlease.kodkodkod.studio"
-export SHOPIFY_API_KEY=461cf2c81050c802a8eb865615750cf1
-export SHOPIFY_API_SECRET=319914f7124e2a6c9878eed9c1ff2911
-export SHOPIFY_GREENLEASE_EXTENSION_ID=517868fc-40f9-40ac-a3b2-7772f341f5ee
+export SHOPIFY_API_KEY=f097b5d548cccf3baa6b07907ed6bf91
+export SHOPIFY_API_SECRET=bfd734d31a77aff33b2932632ede014b
+export SHOPIFY_GREENLEASE_EXTENSION_ID=4967b96e-8818-4d23-824f-b38a5a909f21
 export PORT=4000
 ERR DB PRISMA
 RUN npx prisma generate
