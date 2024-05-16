@@ -8,7 +8,7 @@
             <div style="font-size:11px;font-family: 'helvetica',serif">Garantie casse et vol incluse, sans franchise</div>
         </div>
         <div>
-            <img src="{{ 'greenlease.png' | asset_url }}" alt="greenlease logo" width="100" height="100">
+            <img src="{{ 'greenlease.png' | asset_url }}" alt="greenlease logo" width="100%" height="100">
         </div>
     </div>
 
@@ -23,7 +23,7 @@
 
 <div class="modal" style="z-index:99999999">
     <div class="modal-content">
-        <div class="close">&times;</div>
+        <div class="close" onclick="document.querySelector('.modal').style.display = 'none';">&times;</div>
         <div style="display: flex;gap: 30px;padding: 40px;">
             <div class="left">
                 <h3 style="font-family: Baloo;
@@ -34,7 +34,7 @@ text-align: left;
 margin-top:0;
 ">La consommation circulaire avec GreenLeaze</h3>
                 <div style="display: flex">
-                    <img src="{{ 'number.png' | asset_url }}" alt="Number Image" width="100%"  height="100%" style="margin-right: 20px">
+                    <img src="{{ 'number.png' | asset_url }}" alt="Number Image" width="100"  height="100%" style="margin-right: 20px">
                     <div>
                         <div style="margin-bottom: 30px;font-size:14px;">Choisissez la durée de votre abonnement</div>
                         <div style="margin-bottom: 30px;font-size:14px;">Payez le 1er mois et validez votre abonnement en 3 clics</div>
