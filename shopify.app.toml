@@ -27,3 +27,8 @@ api_version = "2024-04"
 
 [pos]
 embedded = false
+
+[app_proxy]
+url = "https://greenlease.kodkodkod.studio"
+subpath = "greenlease-proxy"
+prefix = "apps"
