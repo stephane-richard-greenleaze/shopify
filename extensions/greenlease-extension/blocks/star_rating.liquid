@@ -329,80 +329,31 @@ console.log(minPricesByDuration);
 
 	}
 
-	function order(){
+
+	async function order() {
+
+		var cartContentsRes = await fetch(window.Shopify.routes.root + 'cart.js');
+		const cartContents = await cartContentsRes.json();
+		console.log('cartcontents');
+		console.log(cartContents);
 		fetch("/apps/greenlease-proxy/api/send", {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
-				'Access-Control-Allow-Origin':  '*',
+				'Access-Control-Allow-Origin': '*',
 			},
-            body: JSON.stringify({
-				"transactionId": "trans_662b4d12e0dc77.12575881",
-				"shop": {
-					"urls": {
-						"shop": "cdiscount.com",
-						"success": "http:\/\/o32epbhjne.preview.infomaniak.website\/module\/greenleazelocation\/validation?success=true",
-						"failure": "http:\/\/o32epbhjne.preview.infomaniak.website\/module\/greenleazelocation\/validation?success=false"
-					},
-					"language": "fr"
-				},
-				"customer": {
-					"firstName": "Jean",
-					"lastName": "Dupont",
-					"company": null,
-					"email": "jean@dupont.com",
-					"addresses": [
-						{
-							"country": "FR",
-							"company": "",
-							"firstName": "Jean",
-							"lastName": "Dupont",
-							"street": "1 rue des alouettes ",
-							"postCode": "45612",
-							"city": "paris",
-							"phone": "0607080910",
-							"delivery": true,
-							"invoice": false
-						},
-						{
-							"country": "FR",
-							"company": "",
-							"firstName": "Jean",
-							"lastName": "Dupont",
-							"street": "1 rue des alouettes ",
-							"postCode": "45612",
-							"city": "paris",
-							"phone": "0607080910",
-							"delivery": false,
-							"invoice": true
-						}
-					]
-				},
-				"products": [
-					{
-						"name": "T-shirt imprim\u00e9 colibri",
-						"unitPrice": 19.12,
-						"vat": 20,
-						"quantity": 1,
-						"combination": {
-							"name": "T-shirt imprim\u00e9 colibri, Composition : Coton - Propri\u00e9t\u00e9 : Manches courtes"
-						},
-						"imageUrl": "https:\/\/o32epbhjne.preview.infomaniak.website\/1\/hummingbird-printed-t-shirt.jpg"
-					}
-				],
-				"cartId": 53,
-				"cartSecureKey": "7c915f14aab3ff24dfe03c75b3fdeb50",
-				"totalInitialFees": 8.4
+			body: JSON.stringify({
+				"cartContents": JSON.stringify(cartContents)
 			}),
 		})  // Adjust this URL based on your server setup
 			.then(response => response.json())
 			.then(data => {
-			        console.log('send', data);
-				   // window.location.href = 'https://pay.greenleaze.com/order/step-1?transaction_id=' + data.uniq ;
+				console.log('send', data);
+				window.location.href = data.redirectUrl;
 
 			})
 			.catch(error => console.error('Error fetching pricing data:', error));
-    }
+	}
 
 	// Close the modal by clicking on the close button
 	document.querySelector('.close').addEventListener('click', () => {
