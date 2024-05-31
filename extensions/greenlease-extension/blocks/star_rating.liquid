@@ -8,7 +8,7 @@
             <div style="font-size:11px;font-family: 'helvetica',serif">Garantie casse et vol incluse, sans franchise</div>
         </div>
         <div>
-            <img src="{{ 'greenlease.png' | asset_url }}" alt="greenlease logo" width="100%" height="100">
+            <img src="{{ 'greenlease.png' | asset_url }}" alt="greenlease logo" width="100%" height="70">
         </div>
     </div>
 
@@ -336,6 +336,11 @@ console.log(minPricesByDuration);
 		const cartContents = await cartContentsRes.json();
 		console.log('cartcontents');
 		console.log(cartContents);
+		if (cartContents.items.length === 0) {
+			alert("Veuillez ajouter le produit au panier");
+			return; // Exit the function if the cart is empty
+		}
+
 		fetch("/apps/greenlease-proxy/api/send", {
 			method: "POST",
 			headers: {
