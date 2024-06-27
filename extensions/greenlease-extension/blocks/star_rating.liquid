@@ -59,19 +59,20 @@ margin-top:0;
                 <div style="font-family: Baloo; font-size: 23px; font-weight: 400; line-height: 36.2px; text-align: center;margin-top: 47px;">
                     Votre abonnement
                 </div>
-                <div class="table" style="margin-top:20px; font-family: Baloo; font-size: 20px; font-weight: 400; line-height: 36.2px">
+                <div class="table"
+                     style="margin-top:20px; font-family: Baloo; font-size: 20px; font-weight: 400; line-height: 36.2px">
                     <div style="text-align: left">
                         <span>Paiement mensuel</span>
-                        <span>139,99€</span>
+                        <span id="paiementMensuel"></span>
                     </div>
-                    <div  style="text-align: left">
+                    <div style="text-align: left">
                         <span>Apport initial</span>
                         <span>0,00€</span>
                     </div>
                     <hr style="margin-top: 20px;margin-bottom:20px;">
-                    <div  style="text-align: left">
+                    <div style="text-align: left">
                         <span>A payer aujourd'hui</span>
-                        <span>0,00€</span>
+                        <span id="paidToday"></span>
                     </div>
                 </div>
                 <div style="margin:auto;text-align:center">
@@ -257,6 +258,41 @@ margin-top:0;
 		sliderValue.innerHTML = monthValues[this.value] + ' months';
 	};
 
+
+	function parseRule(rule, values) {
+		return new Function('return ' + rule.replace(/\[\[(\w+)\]\]/g, (_, key) => values[key]));
+	}
+
+	async function updateMonthlyPayment(rule) {
+		console.log("update monthly paymetn");
+		try {
+			// Fetch cart contents
+			const cartContentsRes = await fetch(window.Shopify.routes.root + 'cart.js');
+			const cartContents = await cartContentsRes.json();
+
+			// Check if cart is empty
+			if (cartContents.items.length === 0) {
+				console.error('Cart is empty');
+				return;
+			}
+
+			// Get the price of the first item in the cart (assuming it's prixHT)
+			const prixHT = parseFloat(cartContents.items[0].price) / 100;
+			const tva = 20 / 100;
+			const duration = 24;
+			const calculatePayment = parseRule(rule, {tva, prixHT, duration});
+			const paiementMensuel = calculatePayment();
+
+			console.log("Calculated payment per month:", paiementMensuel);
+
+			document.getElementById('paiementMensuel').innerText = paiementMensuel.toFixed(2) + ' €';
+			document.getElementById('paidToday').innerText = paiementMensuel.toFixed(2) + ' €';
+
+		} catch (error) {
+			console.error('Failed to fetch cart contents or update payment:', error);
+		}
+	}
+
 	document.addEventListener('DOMContentLoaded', function() {
 
 		fetch("/apps/greenlease-proxy/api/pricing", {
@@ -270,25 +306,23 @@ margin-top:0;
 			.then(data => {
 				console.log('Pricing data:', data);
 				const priceRules = data['hydra:member'];
-
-				// Object to hold the minimum price for each duration
 				const minPricesByDuration = {};
-
 				// Aggregate the minimum prices for each duration
 				priceRules.forEach(priceRule => {
 					const duration = priceRule.duration;
 					const minPrice = parseFloat(priceRule.minPrice);
 					if (!minPricesByDuration[duration] || minPrice < minPricesByDuration[duration].minPrice) {
-						minPricesByDuration[duration] = { minPrice : priceRule.maxPrice, perMonthPrice: (minPrice / duration).toFixed(2) };
+						minPricesByDuration[duration] = {
+							minPrice: priceRule.maxPrice,
+							perMonthPrice: (minPrice / duration).toFixed(2),
+							rule: priceRule.rule
+						};
 					}
 				});
 
-				// Target the div where the buttons will be appended
 				const turneeButtonsDiv = document.querySelector('.Turneebuttons');
-
-				// Clear previous buttons if necessary
 				turneeButtonsDiv.innerHTML = '';
-console.log(minPricesByDuration);
+
 				// Create and append buttons based on available durations
 				Object.keys(minPricesByDuration).forEach((duration, index) => {
 					const button = document.createElement('button');
@@ -300,6 +334,8 @@ console.log(minPricesByDuration);
 
 					turneeButtonsDiv.appendChild(button);
 				});
+				// default setup span 24
+				updateMonthlyPayment(minPricesByDuration['24'].rule);
 				document.querySelectorAll('.open-modal').forEach(button => {
 					button.addEventListener('click', function() {
 						const value = this.getAttribute('data-value');
@@ -312,6 +348,8 @@ console.log(minPricesByDuration);
 						modal.style.display = 'block';
 						document.body.appendChild(modal);
 						updateSliderValueDisplay();
+
+
 
 					});
 				});
@@ -328,7 +366,6 @@ console.log(minPricesByDuration);
         }
 
 	}
-
 
 	async function order() {
 
@@ -365,6 +402,8 @@ console.log(minPricesByDuration);
 		document.querySelector('.modal').style.display = 'none';
 	});
 
+
+
 	// Close the modal if the user clicks outside of it
 	window.onclick = function(event) {
 		var modal = document.querySelector('.modal');
@@ -373,6 +412,8 @@ console.log(minPricesByDuration);
 			modal.style.display = 'none';
 		}
 	};
+
+
 </script>
 {% schema %}
 {

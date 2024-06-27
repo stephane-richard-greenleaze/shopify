@@ -20,7 +20,7 @@
 			modal.style.display = 'block';
 			document.body.appendChild(modal);
 			fetchPrice();
-			document.getElementById('monthSlider').value = 3;
+			document.getElementById('monthSliderCart').value = 4;
 			updateSliderValueDisplay();
 
 		}
@@ -39,7 +39,6 @@
 	}
 
 	async function updateMonthlyPayment(rule) {
-		console.log("update monthly paymetn");
 		try {
 			// Fetch cart contents
 			const cartContentsRes = await fetch(window.Shopify.routes.root + 'cart.js');
@@ -54,21 +53,23 @@
 			// Get the price of the first item in the cart (assuming it's prixHT)
 			const prixHT = parseFloat(cartContents.items[0].price) / 100;
 			const tva = 20 / 100;
-			const duration = 24;
+			const duration = 36;
 			const calculatePayment = parseRule(rule, {tva, prixHT, duration});
 			const paiementMensuel = calculatePayment();
 
 			console.log("Calculated payment per month:", paiementMensuel);
 
-			document.getElementById('paiementMensuel').innerText = paiementMensuel.toFixed(2) + ' €';
-			document.getElementById('paidToday').innerText = paiementMensuel.toFixed(2) + ' €';
+			const fixed = paiementMensuel.toFixed(2);
+
+			document.getElementById('paiementMensuelCart').innerHTML = `${fixed} €`;
+			document.getElementById('paidTodayCart').innerHTML = `${fixed} €`;
 
 		} catch (error) {
 			console.error('Failed to fetch cart contents or update payment:', error);
 		}
 	}
 
-	async function fetchPrice() {
+	async function fetchPrice(monthDuration = '36') {
 
 		fetch("/apps/greenlease-proxy/api/pricing", {
 			method: "GET",
@@ -95,9 +96,10 @@
 					}
 				});
 
+				console.log(minPricesByDuration);
 				// default setup span 24
-				console.log('24rule', minPricesByDuration['24'].rule);
-				updateMonthlyPayment(minPricesByDuration['24'].rule);
+				console.log('24rule', minPricesByDuration[monthDuration].rule);
+				updateMonthlyPayment(minPricesByDuration[monthDuration].rule);
 
 			})
 			.catch(error => console.error('Error fetching pricing data:', error));
@@ -105,8 +107,8 @@
 
 
 	function updateSliderValueDisplay() {
-		const slider = document.getElementById('monthSlider');
-		const monthValues = [6, 12, 18, 24];
+		const slider = document.getElementById('monthSliderCart');
+		const monthValues = [12, 18, 24, 36];
 		const sliderValue = document.getElementById('sliderValue');
 		if (sliderValue) {
 			sliderValue.innerHTML = monthValues[slider.value] + ' mois';
@@ -138,6 +140,23 @@
 			})
 			.catch(error => console.error('Error fetching pricing data:', error));
 	}
+
+
+	document.addEventListener('DOMContentLoaded', function() {
+		const slider = document.getElementById('monthSliderCart');
+		if (slider) {
+			slider.addEventListener('input', async function() {
+				console.log('update slider');
+
+				const monthValues = [12, 18, 24, 36];
+				const selectedMonth = monthValues[slider.value];
+
+				fetchPrice(selectedMonth)
+				//await updateSliderValueDisplay();
+				//await updatePaymentForSliderValue();
+			});
+		}
+	});
 
 
 </script>
@@ -653,7 +672,7 @@
                 <link href="https://fonts.cdnfonts.com/css/baloo" rel="stylesheet">
 
                 <div>
-                    <button onclick="openModalGreenleaze()" id="btn-greenlease" class="buttonGreenlease open-modal"
+                    <button onclick="openModalGreenleaze()" id="btn-greenlease" class="buttonGreenlease open-modal-cart"
                             data-value="4">
                         Abonnement avec Greenleaze
                     </button>
@@ -694,23 +713,23 @@
                             </div>
                             <div class="right">
                                 <div class="slider-container">
-                                    <input type="range" id="monthSlider" min="0" max="3" step="1" value="0">
+                                    <input type="range" id="monthSliderCart" min="0" max="4" step="1" value="0">
                                     <div class="slider-labels">
-                                        <span>6 mois +</span>
-                                        <span>12 mois +</span>
-                                        <span>18 mois +</span>
-                                        <span>24 mois +</span>
+                                        <span>12 mois</span>
+                                        <span>18 mois</span>
+                                        <span>24 mois</span>
+                                        <span>36 mois</span>
                                     </div>
 
                                 </div>
                                 <div style="font-family: Baloo; font-size: 23px; font-weight: 400; line-height: 36.2px; text-align: center;margin-top: 47px;">
-                                    Votre abonnement
+                                    Votre abonnement test
                                 </div>
                                 <div class="table"
                                      style="margin-top:20px; font-family: Baloo; font-size: 20px; font-weight: 400; line-height: 36.2px">
                                     <div style="text-align: left">
                                         <span>Paiement mensuel</span>
-                                        <span id="paiementMensuel"></span>
+                                        <span id="paiementMensuelCart"></span>
                                     </div>
                                     <div style="text-align: left">
                                         <span>Apport initial</span>
@@ -719,7 +738,7 @@
                                     <hr style="margin-top: 20px;margin-bottom:20px;">
                                     <div style="text-align: left">
                                         <span>A payer aujourd'hui</span>
-                                        <span id="paidToday"></span>
+                                        <span id="paidTodayCart"></span>
                                     </div>
                                 </div>
                                 <div style="margin:auto;text-align:center">
@@ -818,7 +837,7 @@
                         background-color: rgba(214, 248, 137, 1);
                     }
 
-                    .open-modal {
+                    .open-modal-cart {
                         padding: 15px;
                         background: grey;
                         border-radius: 5px;
@@ -831,7 +850,7 @@
                         text-align: center;
                     }
 
-                    .open-modal:hover {
+                    .open-modal-cart:hover {
                         background: rgba(214, 248, 137, 1);
                     }
 
@@ -840,7 +859,7 @@
                         text-align: center; /* Center the slider within the container */
                     }
 
-                    #monthSlider {
+                    #monthSliderCart {
                         -webkit-appearance: none;
                         appearance: none;
                         width: 100%;
@@ -852,11 +871,11 @@
                         transition: opacity .2s;
                     }
 
-                    #monthSlider:hover {
+                    #monthSliderCart:hover {
                         opacity: 1;
                     }
 
-                    #monthSlider::-webkit-slider-thumb {
+                    #monthSliderCart::-webkit-slider-thumb {
                         -webkit-appearance: none;
                         appearance: none;
                         width: 25px;
@@ -871,7 +890,7 @@
                         line-height: 25px;
                     }
 
-                    #monthSlider::-moz-range-thumb {
+                    #monthSliderCart::-moz-range-thumb {
                         -webkit-appearance: none;
                         appearance: none;
                         width: 25px;

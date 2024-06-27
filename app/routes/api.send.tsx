@@ -23,7 +23,7 @@ export async function action({
 	// Use private access token on requests that don't come from Shopify
    // const { storefront } = await unauthenticated.storefront('quickstart-682bebea');
     console.log('Session', session);
-    console.log('storefront', storefront);
+    //console.log('storefront', storefront);
     const data = await request.json();
     console.log('-----try retrieve cart---', JSON.parse(data.cartContents))
     const cartContents = JSON.parse(data.cartContents);
