@@ -10,11 +10,29 @@ import {prisma} from "../../prisma.server";
 
 export const links = () => [{ rel: "stylesheet", href: polarisStyles }];
 
-export const loader = async ({ request }: LoaderFunctionArgs) => {
-  await authenticate.admin(request);
-    console.log(process.env.SHOPIFY_API_SECRET);
-  return json({ apiKey: process.env.SHOPIFY_API_KEY || "" });
-};
+// export const loader = async ({ request }: LoaderFunctionArgs) => {
+//   await authenticate.admin(request);
+//     console.log(process.env.SHOPIFY_API_SECRET);
+//   return json({ apiKey:  });
+// };
+export async function loader({ request }: LoaderFunctionArgs) {
+  console.log('LOADER APP -----')
+  const url = new URL(request.url);
+  const shopId = url.searchParams.get("shop");
+  console.log('shop', shopId);
+  if (!shopId) {
+    return json({ error: "Shop ID is required" }, { status: 400 });
+  }
+
+  const shop = await prisma.shop.findUnique({
+    where: { shopId },
+  });
+
+  if (!shop) {
+    return json({ apiKey: "", deliveryFee: "", shopId });
+  }
+  return json({ apiKey: shop.apiKey, deliveryFee: shop.deliveryFee, shopId });
+}
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   console.log('hit app', request);
