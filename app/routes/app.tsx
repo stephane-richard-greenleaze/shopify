@@ -31,7 +31,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   if (!shop) {
     return json({ apiKey: "", deliveryFee: "", shopId });
   }
-  return json({ apiKey: shop.apiKey, deliveryFee: shop.deliveryFee, shopId });
+  return json({ apiKey: shop.apiKey, deliveryFee: shop.deliveryFee, shop: shopId });
 }
 
 export const action = async ({ request }: ActionFunctionArgs) => {
