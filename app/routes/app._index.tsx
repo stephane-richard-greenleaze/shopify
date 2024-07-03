@@ -92,7 +92,7 @@ export default function Index() {
                   <Form method="post" action={`?shopId=${shopId}`}>
                     <input
                         type="hidden"
-                        name="shopId"
+                        name="shop"
                         value={shopId}  // Pass the shopId as a hidden field
                     />
                     <input

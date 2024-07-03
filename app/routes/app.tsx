@@ -20,8 +20,9 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   console.log('hit app', request);
   const url = new URL(request.url);
   const shopId = url.searchParams.get("shop");
+  console.log('shop', shopId);
   if (!shopId) {
-    return json({ error: "Shop ID is required" }, { status: 400 });
+    return json({ error: "cannot save Shop ID is required" }, { status: 400 });
   }
 
   const formData = await request.formData();
