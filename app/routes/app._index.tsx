@@ -20,9 +20,8 @@ import { getSession, commitSession } from '~/session.server';
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const url = new URL(request.url);
-  console.log(request);
-  
-  const shopId = url.searchParams.get("shopId");
+  const shopId = url.searchParams.get("shop");
+  console.log('shop', shopId);
   if (!shopId) {
     return json({ error: "Shop ID is required" }, { status: 400 });
   }
