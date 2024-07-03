@@ -26,6 +26,7 @@ model Session {
 
 model Shop {
   id          Int      @id @default(autoincrement())
+  shopId      String   @unique
   apiKey      String
   deliveryFee String
   createdAt   DateTime @default(now())
