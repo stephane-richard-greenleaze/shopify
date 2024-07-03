@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
+import { prisma } from "../../prisma.server";
 import {Form, useActionData, useNavigation, useSubmit,useLoaderData} from "@remix-run/react";
 import {
   Page,
