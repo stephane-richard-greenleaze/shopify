@@ -17,7 +17,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 };
 
 export const action = async ({ request }: ActionFunctionArgs) => {
-  console.log('hit app');
+  console.log('hit app', request);
   const url = new URL(request.url);
   const shopId = url.searchParams.get("shop");
   if (!shopId) {
