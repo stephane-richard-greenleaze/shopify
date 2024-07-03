@@ -19,9 +19,9 @@
 			const modal = document.querySelector('.modalGreenleaze');
 			modal.style.display = 'block';
 			document.body.appendChild(modal);
-			fetchPrice();
+			fetchPriceModal();
 			document.getElementById('monthSliderCart').value = 4;
-			updateSliderValueDisplay();
+			updateSliderValueDisplayCart();
 
 		}
 	}
@@ -38,7 +38,7 @@
 		return new Function('return ' + rule.replace(/\[\[(\w+)\]\]/g, (_, key) => values[key]));
 	}
 
-	async function updateMonthlyPayment(rule) {
+	async function updateMonthlyPaymentCart(rule) {
 		try {
 			// Fetch cart contents
 			const cartContentsRes = await fetch(window.Shopify.routes.root + 'cart.js');
@@ -69,7 +69,7 @@
 		}
 	}
 
-	async function fetchPrice(monthDuration = '36') {
+	async function fetchPriceModal(monthDuration = '36') {
 
 		fetch("/apps/greenlease-proxy/api/pricing", {
 			method: "GET",
@@ -99,14 +99,14 @@
 				console.log(minPricesByDuration);
 				// default setup span 24
 				console.log('24rule', minPricesByDuration[monthDuration].rule);
-				updateMonthlyPayment(minPricesByDuration[monthDuration].rule);
+				updateMonthlyPaymentCart(minPricesByDuration[monthDuration].rule);
 
 			})
 			.catch(error => console.error('Error fetching pricing data:', error));
 	}
 
 
-	function updateSliderValueDisplay() {
+	function updateSliderValueDisplayCart() {
 		const slider = document.getElementById('monthSliderCart');
 		const monthValues = [12, 18, 24, 36];
 		const sliderValue = document.getElementById('sliderValue');
@@ -151,7 +151,7 @@
 				const monthValues = [12, 18, 24, 36];
 				const selectedMonth = monthValues[slider.value];
 
-				fetchPrice(selectedMonth)
+				fetchPriceModal(selectedMonth)
 				//await updateSliderValueDisplay();
 				//await updatePaymentForSliderValue();
 			});

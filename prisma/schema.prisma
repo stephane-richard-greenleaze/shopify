@@ -23,3 +23,11 @@ model Session {
   accessToken String
   userId      BigInt?
 }
+
+model Shop {
+  id          Int      @id @default(autoincrement())
+  apiKey      String
+  deliveryFee String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}

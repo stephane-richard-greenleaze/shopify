@@ -17,42 +17,47 @@ import {
 import { authenticate } from "../shopify.server";
 import { getSession, commitSession } from '~/session.server';
 
-export async function loader({ request }) {
-  const session = await getSession(request.headers.get('Cookie'));
-  console.log("Session data:", session.data); // Check what's in the session
 
-  const apiKey = session.get('apiKey') || "";
-  return json({ apiKey });
+export async function loader({ request }: LoaderFunctionArgs) {
+  const url = new URL(request.url);
+  const shopId = url.searchParams.get("shopId");
+  if (!shopId) {
+    return json({ error: "Shop ID is required" }, { status: 400 });
+  }
+
+  const shop = await prisma.shop.findUnique({
+    where: { shopId },
+  });
+
+  if (!shop) {
+    return json({ apiKey: "", deliveryFee: "" });
+  }
+  return json({ apiKey: shop.apiKey, deliveryFee: shop.deliveryFee });
 }
 
 export const action = async ({ request }: ActionFunctionArgs) => {
-
-  const session = await getSession(request.headers.get('Cookie'));
-  const formData = await request.formData();
-  const apiKey = formData.get('apiKey');
-
-  if (!apiKey) {
-    session.flash('message', 'API Key is required');
-    return json({}, {
-      headers: {
-        'Set-Cookie': await commitSession(session),
-      },
-      status: 400
-    });
+  const url = new URL(request.url);
+  const shopId = url.searchParams.get("shopId");
+  if (!shopId) {
+    return json({ error: "Shop ID is required" }, { status: 400 });
   }
 
-  const commit = await commitSession(session);
-  console.log(commit);
-  console.log('APIKEY', apiKey);
-  session.flash('message', 'Clé API sauvegardée !');
-  session.set('apiKey', apiKey);  // Save API key to session
+  const formData = await request.formData();
+  const apiKey = formData.get('apiKey');
+  const deliveryFee = formData.get('deliveryFee');
 
-  return json({ success: 'Clé API sauvegardée !' }, {
-    headers: {
-      'Set-Cookie': await commitSession(session),
-    }
+  if (!apiKey || !deliveryFee) {
+    return json({ error: 'API Key and Delivery Fee are required' }, { status: 400 });
+  }
+
+  // Save to database
+  await prisma.shop.upsert({
+    where: { shopId },
+    update: { apiKey, deliveryFee },
+    create: { shopId, apiKey, deliveryFee },
   });
 
+  return json({ success: 'Clé API et frais de livraison sauvegardés !' });
 };
 
 export default function Index() {
@@ -61,7 +66,12 @@ export default function Index() {
   const submit = useSubmit();
   const isLoading =
     ["loading", "submitting"].includes(nav.state) && nav.formMethod === "POST";
-  const { apiKey } = useLoaderData();
+  const { apiKey, deliveryFee } = useLoaderData();
+
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const shopId = urlParams.get("shopId");
+
 
   return (
     <Page>
@@ -81,7 +91,12 @@ export default function Index() {
                   <h2 style={{fontSize:20, fontWeight:  'bold', paddingBottom : 30}}>Configuration</h2>
                   {actionData?.error && <p style={{ color: 'red' }}>{actionData.error}</p>}
                   {actionData?.success && <p style={{ color: 'green' }}>{actionData.success}</p>}
-                  <Form method="post">
+                  <Form method="post" action={`?shopId=${shopId}`}>
+                    <input
+                        type="hidden"
+                        name="shopId"
+                        value={shopId}  // Pass the shopId as a hidden field
+                    />
                     <input
                         type="text"
                         name="apiKey"
@@ -100,6 +115,7 @@ export default function Index() {
                           id="deliveryFee"
                           placeholder="Enter votre frais de livraison"
                           required
+                          defaultValue={deliveryFee}
                       />
                     </div>
 

@@ -291,7 +291,9 @@ This template uses [Remix](https://remix.run). The following Shopify tools are a
 PROD
 shopify app env show
 
-pm2 start npm --name "greenlease" -- start
+PORT=4000 pm2 start npm --name "greenlease" -- start
+
+
 export SHOPIFY_APP_URL="https://greenlease.kodkodkod.studio"
 export SHOPIFY_API_KEY=f097b5d548cccf3baa6b07907ed6bf91
 export SHOPIFY_API_SECRET=bfd734d31a77aff33b2932632ede014b
