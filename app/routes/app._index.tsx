@@ -30,9 +30,9 @@ export async function loader({ request }: LoaderFunctionArgs) {
   });
 
   if (!shop) {
-    return json({ apiKey: "", deliveryFee: "" });
+    return json({ apiKey: "", deliveryFee: "", shopId });
   }
-  return json({ apiKey: shop.apiKey, deliveryFee: shop.deliveryFee });
+  return json({ apiKey: shop.apiKey, deliveryFee: shop.deliveryFee, shopId });
 }
 
 export const action = async ({ request }: ActionFunctionArgs) => {
@@ -66,11 +66,7 @@ export default function Index() {
   const submit = useSubmit();
   const isLoading =
     ["loading", "submitting"].includes(nav.state) && nav.formMethod === "POST";
-  const { apiKey, deliveryFee } = useLoaderData();
-
-
-  const urlParams = new URLSearchParams(window.location.search);
-  const shopId = urlParams.get("shopId");
+  const { apiKey, deliveryFee, shopId } = useLoaderData();
 
 
   return (
