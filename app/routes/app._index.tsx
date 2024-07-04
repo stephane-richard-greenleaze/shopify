@@ -68,7 +68,7 @@ export default function Index() {
   const submit = useSubmit();
   const isLoading =
     ["loading", "submitting"].includes(nav.state) && nav.formMethod === "POST";
-  const { apiKey, deliveryFee, shopId } = useLoaderData();
+  const { apiKey, deliveryFee, shop } = useLoaderData();
 
 
   return (
@@ -89,11 +89,11 @@ export default function Index() {
                   <h2 style={{fontSize:20, fontWeight:  'bold', paddingBottom : 30}}>Configuration</h2>
                   {actionData?.error && <p style={{ color: 'red' }}>{actionData.error}</p>}
                   {actionData?.success && <p style={{ color: 'green' }}>{actionData.success}</p>}
-                  <Form method="post" action={`?shopId=${shopId}`}>
+                  <Form method="post" action={`?shop=${shop}`}>
                     <input
                         type="hidden"
                         name="shop"
-                        value={shopId}  // Pass the shopId as a hidden field
+                        value={shop}  // Pass the shopId as a hidden field
                     />
                     <input
                         type="text"
