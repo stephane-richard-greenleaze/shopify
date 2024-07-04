@@ -319,7 +319,7 @@ margin-top:0;
 						};
 					}
 				});
-
+				updateMonthlyPayment(minPricesByDuration[monthDuration].rule);
 				const turneeButtonsDiv = document.querySelector('.Turneebuttons');
 				turneeButtonsDiv.innerHTML = '';
 
@@ -359,7 +359,7 @@ margin-top:0;
 
 	function updateSliderValueDisplay() {
 		const slider = document.getElementById('monthSlider');
-		const monthValues = [6, 12, 18, 24];
+		const monthValues = [12, 18, 24, 36];
 		const sliderValue = document.getElementById('sliderValue');
 		if(sliderValue){
 			sliderValue.innerHTML = monthValues[slider.value] + ' mois';
