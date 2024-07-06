@@ -1,13 +1,13 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
-client_id = "f097b5d548cccf3baa6b07907ed6bf91"
-name = "GreenLeaze"
-handle = "greenleaze-8"
+client_id = "3fd128cceef5930283fee8f4c543c344"
+name = "Greenleaze"
+handle = "greenleaze-2"
 application_url = "https://greenlease.kodkodkod.studio"
 embedded = true
 
 [build]
-automatically_update_urls_on_dev = true
+automatically_update_urls_on_dev = false
 dev_store_url = "test-1-greenleaze.myshopify.com"
 include_config_on_deploy = true
 
@@ -25,10 +25,10 @@ redirect_urls = [
 [webhooks]
 api_version = "2024-04"
 
-[pos]
-embedded = false
-
 [app_proxy]
 url = "https://greenlease.kodkodkod.studio"
 subpath = "greenlease-proxy"
 prefix = "apps"
+
+[pos]
+embedded = false

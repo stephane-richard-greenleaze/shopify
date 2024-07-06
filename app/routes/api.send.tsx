@@ -102,7 +102,7 @@ export async function action({
         return json({'status' : 'ok','uniq':uniq, 'redirectUrl': 'https://pay.greenleaze.com/order/step-1?transaction_id=trans_'+uniq });
 
     } catch (error) {
-        console.error('Failed to create order:', error);
+        console.error('Failed to send:', error);
         return json({ error: error.message }); // Properly handle and return the error case.
     }
 
