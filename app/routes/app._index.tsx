@@ -32,9 +32,9 @@ export async function loader({ request }: LoaderFunctionArgs) {
   });
 
   if (!shop) {
-    return json({ apiKey: "", deliveryFee: "", shop: shopId });
+    return json({ apiKeyGreenlease: "", deliveryFee: "", shop: shopId });
   }
-  return json({ apiKey: shop.apiKeyGreenlease, deliveryFee: shop.deliveryFee,shop: shopId });
+  return json({ apiKeyGreenlease: shop.apiKeyGreenlease, deliveryFee: shop.deliveryFee,shop: shopId });
 }
 
 export const action = async ({ request }: ActionFunctionArgs) => {
@@ -45,18 +45,18 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   }
 
   const formData = await request.formData();
-  const apiKey = formData.get('apiKey');
+  const apiKeyGreenlease = formData.get('apiKeyGreenlease');
   const deliveryFee = formData.get('deliveryFee');
 
-  if (!apiKey || !deliveryFee) {
+  if (!apiKeyGreenlease || !deliveryFee) {
     return json({ error: 'API Key and Delivery Fee are required' }, { status: 400 });
   }
 
   // Save to database
   await prisma.shop.upsert({
     where: { shopId },
-    update: { apiKey, deliveryFee },
-    create: { shopId, apiKey, deliveryFee },
+    update: { apiKeyGreenlease, deliveryFee },
+    create: { shopId, apiKeyGreenlease, deliveryFee },
   });
 
   return json({ success: 'Clé API et frais de livraison sauvegardés !' });
@@ -68,7 +68,7 @@ export default function Index() {
   const submit = useSubmit();
   const isLoading =
     ["loading", "submitting"].includes(nav.state) && nav.formMethod === "POST";
-  const { apiKey, deliveryFee, shop } = useLoaderData();
+  const { apiKeyGreenlease, deliveryFee, shop } = useLoaderData();
 
 
   return (
@@ -97,12 +97,12 @@ export default function Index() {
                     />
                     <input
                         type="text"
-                        name="apiKey"
-                        id="apiKey"
+                        name="apiKeyGreenlease"
+                        id="apiKeyGreenlease"
                         placeholder="Enter votre clé API"
                         required
                         style={{"padding": 5}}
-                        defaultValue={apiKey}  // Set the value from the loader data
+                        defaultValue={apiKeyGreenlease}  // Set the value from the loader data
                     />
 
                     <div style={{"paddingTop": 20,paddingBottom: 20}}>

@@ -29,9 +29,9 @@ export async function loader({ request }: LoaderFunctionArgs) {
   });
 
   if (!shop) {
-    return json({ apiKey: "", deliveryFee: "", shopId });
+    return json({ apiKeyGreenlease: "", deliveryFee: "", shopId });
   }
-  return json({ apiKey: shop.apiKeyGreenlease, deliveryFee: shop.deliveryFee, shop: shopId });
+  return json({ apiKeyGreenlease: shop.apiKeyGreenlease, deliveryFee: shop.deliveryFee, shop: shopId });
 }
 
 export const action = async ({ request }: ActionFunctionArgs) => {
@@ -44,18 +44,18 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   }
 
   const formData = await request.formData();
-  const apiKey = formData.get('apiKey');
+  const apiKeyGreenlease = formData.get('apiKeyGreenlease');
   const deliveryFee = formData.get('deliveryFee');
 
-  if (!apiKey || !deliveryFee) {
+  if (!apiKeyGreenlease || !deliveryFee) {
     return json({ error: 'API Key and Delivery Fee are required' }, { status: 400 });
   }
 
   // Save to database
   await prisma.shop.upsert({
     where: { shopId },
-    update: { apiKey, deliveryFee },
-    create: { shopId, apiKeyGreenlease : apiKey, deliveryFee },
+    update: { apiKeyGreenlease, deliveryFee },
+    create: { shopId, apiKeyGreenlease : apiKeyGreenlease, deliveryFee },
   });
 
   return json({ success: 'Clé API et frais de livraison sauvegardés !' });
@@ -63,7 +63,6 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
 export default function App() {
   const { apiKey } = useLoaderData<typeof loader>();
-
   return (
     <AppProvider isEmbeddedApp apiKey={apiKey}>
       <ui-nav-menu>
