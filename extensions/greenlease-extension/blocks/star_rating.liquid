@@ -252,7 +252,7 @@ margin-top:0;
 	const slider = document.getElementById('monthSlider');
 	const sliderValue = document.getElementById('sliderValue');
 
-	const monthValues = [6, 12, 18, 24];  // Array of month values
+	const monthValues = [12, 18, 24, 36];
 
 	slider.oninput = function() {
 		sliderValue.innerHTML = monthValues[this.value] + ' months';
@@ -293,13 +293,13 @@ margin-top:0;
 		}
 	}
 
-	document.addEventListener('DOMContentLoaded', function() {
+	async function fetchPriceModal(monthDuration = '36') {
 
 		fetch("/apps/greenlease-proxy/api/pricing", {
 			method: "GET",
 			headers: {
 				"Content-Type": "application/json",
-				'Access-Control-Allow-Origin':  '*',
+				'Access-Control-Allow-Origin': '*',
 			},
 		})  // Adjust this URL based on your server setup
 			.then(response => response.json())
@@ -319,42 +319,113 @@ margin-top:0;
 						};
 					}
 				});
-				updateMonthlyPayment(minPricesByDuration[monthDuration].rule);
-				const turneeButtonsDiv = document.querySelector('.Turneebuttons');
-				turneeButtonsDiv.innerHTML = '';
 
-				// Create and append buttons based on available durations
-				Object.keys(minPricesByDuration).forEach((duration, index) => {
-					const button = document.createElement('button');
-					button.className = 'open-modal';
-					button.style = 'color:black';
-					button.setAttribute('data-duration', duration);
-					button.setAttribute('data-value', index);
-					button.innerHTML = `<span style="margin-right:30px">${duration} mois</span> ${minPricesByDuration[duration].minPrice}€ / mois`;
-
-					turneeButtonsDiv.appendChild(button);
-				});
+				console.log(minPricesByDuration);
 				// default setup span 24
-				updateMonthlyPayment(minPricesByDuration['24'].rule);
-				document.querySelectorAll('.open-modal').forEach(button => {
-					button.addEventListener('click', function() {
-						const value = this.getAttribute('data-value');
-						if (!value) {
-							console.error('No data-value attribute found.');
-						}
-						document.getElementById('monthSlider').value = value;
+				console.log('24rule', minPricesByDuration[monthDuration].rule);
+				updateMonthlyPayment(minPricesByDuration[monthDuration].rule);
 
-						const modal = document.querySelector('.modal');
-						modal.style.display = 'block';
-						document.body.appendChild(modal);
-						updateSliderValueDisplay();
-
-
-
-					});
-				});
 			})
 			.catch(error => console.error('Error fetching pricing data:', error));
+	}
+
+
+	const fetchingPricing = async() => {
+		console.log('fetching pricing');
+		const response = await fetch("/apps/greenlease-proxy/api/pricing", {
+			method: "GET",
+			headers: {
+				"Content-Type": "application/json",
+				'Access-Control-Allow-Origin':  '*',
+			},
+		});
+		const data = await response.json();
+		console.log('Pricing data:', data);
+		const priceRules = data['hydra:member'];
+		const minPricesByDuration = {};
+		// Aggregate the minimum prices for each duration
+		priceRules.forEach(priceRule => {
+			const duration = priceRule.duration;
+			if(duration != 1 ){
+				const minPrice = parseFloat(priceRule.minPrice);
+				if (!minPricesByDuration[duration] || minPrice < minPricesByDuration[duration].minPrice) {
+					minPricesByDuration[duration] = {
+						minPrice: priceRule.maxPrice,
+						perMonthPrice: (minPrice / duration).toFixed(2),
+						rule: priceRule.rule
+					};
+				}
+			}
+		});
+		//updateMonthlyPayment(minPricesByDuration[monthDuration].rule);
+		const turneeButtonsDiv = document.querySelector('.Turneebuttons');
+		turneeButtonsDiv.innerHTML = '';
+
+		console.log('minPricesByDuration', minPricesByDuration)
+		// Create and append buttons based on available durations
+		const tva = 20 / 100;
+		const cartContentsRes = await fetch(window.Shopify.routes.root + 'cart.js');
+		const cartContents = await cartContentsRes.json();
+
+		const prixHT = cartContents ? parseFloat(cartContents.items[0].price) / 100 : null;
+
+		Object.keys(minPricesByDuration).forEach((duration, index) => {
+
+			console.log('duration', duration);
+			const priceProduct =  prixHT ?  prixHT : 20.00;
+			const calculatePayment = parseRule(minPricesByDuration[duration].rule, {tva, prixHT : priceProduct, duration});
+			const paiementMensuel = calculatePayment();
+
+			const button = document.createElement('button');
+			button.className = 'open-modal';
+			button.style = 'color:black';
+			button.setAttribute('data-duration', duration);
+			button.setAttribute('data-value', index);
+			button.innerHTML = `<span style="margin-right:30px">${duration} mois</span> ${paiementMensuel.toFixed(2)} € / mois`;
+
+			turneeButtonsDiv.appendChild(button);
+		});
+		// default setup span 24
+		updateMonthlyPayment(minPricesByDuration['24'].rule);
+		document.querySelectorAll('.open-modal').forEach(button => {
+			button.addEventListener('click', function() {
+				const value = this.getAttribute('data-value');
+				if (!value) {
+					console.error('No data-value attribute found.');
+				}
+				document.getElementById('monthSlider').value = value;
+
+				const modal = document.querySelector('.modal');
+				modal.style.display = 'block';
+				document.body.appendChild(modal);
+				updateSliderValueDisplay();
+
+
+
+			});
+		});
+    }
+	document.addEventListener('DOMContentLoaded', function() {
+
+	    fetchingPricing();
+	});
+
+
+	// on moving slider
+	document.addEventListener('DOMContentLoaded', function() {
+		const slider = document.getElementById('monthSlider');
+		if (slider) {
+			slider.addEventListener('input', async function() {
+				console.log('update slider');
+
+				const monthValues = [12, 18, 24, 36];
+				const selectedMonth = monthValues[slider.value];
+
+				fetchPriceModal(selectedMonth)
+				//await updateSliderValueDisplay();
+				//await updatePaymentForSliderValue();
+			});
+		}
 	});
 
 	function updateSliderValueDisplay() {
