@@ -26,10 +26,11 @@ export async function action({
     console.log('Session', session);
     //console.log('storefront', storefront);
 
+    const shop = session ? session.shop : '6312d3-b1.myshopify.com';
     console.log('-----try retrieve cart---', JSON.parse(data.cartContents))
     const cartContents = JSON.parse(data.cartContents);
     //var base_url = process.env.SHOPIFY_APP_URL + "/api/redirect";
-    var base_url = `https://${session.shop}` + "/apps/greenlease-proxy/api/redirect";
+    var base_url = `https://${shop}` + "/apps/greenlease-proxy/api/redirect";
     console.log('base_url', base_url);
 
 
@@ -61,7 +62,7 @@ export async function action({
             "transactionId": `trans_${uniq}`,
             "shop": {
                 "urls": {
-                    "shop": `${session.shop}`, //session.shop,
+                    "shop": `${shop}`, //session.shop,
                     "success": base_url +"?success=true",
                     "failure": base_url +"?success=false"
                 },
