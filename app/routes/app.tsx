@@ -31,7 +31,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   if (!shop) {
     return json({ apiKey: "", deliveryFee: "", shopId });
   }
-  return json({ apiKey: shop.apiKey, deliveryFee: shop.deliveryFee, shop: shopId });
+  return json({ apiKey: shop.apiKeyGreenlease, deliveryFee: shop.deliveryFee, shop: shopId });
 }
 
 export const action = async ({ request }: ActionFunctionArgs) => {
@@ -55,7 +55,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   await prisma.shop.upsert({
     where: { shopId },
     update: { apiKey, deliveryFee },
-    create: { shopId, apiKey, deliveryFee },
+    create: { shopId, apiKeyGreenlease : apiKey, deliveryFee },
   });
 
   return json({ success: 'Clé API et frais de livraison sauvegardés !' });

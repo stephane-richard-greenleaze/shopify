@@ -92,7 +92,7 @@ export async function action({
         const responseTransac = await fetch('https://pay.greenleaze.com/send-shop-order-data', {
             method: 'POST', // Set the method to POST
             headers: {
-                'x-api-key': '7ea199ed-9953-45ea-896c-da04d6d6bfb8',
+                'x-api-key': '8660c63a-5c89-469c-a03c-2399ce5d9c18',
                 'Content-Type': 'application/json' // Set the Content-Type to application/json
             },
             body: JSON.stringify(payload)
