@@ -302,3 +302,7 @@ export PORT=4000
 ERR DB PRISMA
 RUN npx prisma generate
 RUN npx prisma migrate deploy
+
+CONNECT no cli
+https://github.com/Shopify/cli/issues/2809
+https://6312d3-b1.myshopify.com/ 

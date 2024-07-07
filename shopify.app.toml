@@ -8,7 +8,7 @@ embedded = true
 
 [build]
 automatically_update_urls_on_dev = false
-dev_store_url = "test-1-greenleaze.myshopify.com"
+dev_store_url = "6312d3-b1.myshopify.com"
 include_config_on_deploy = true
 
 [access_scopes]

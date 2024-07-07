@@ -1,0 +1,15 @@
+{
+  "/Users/maxime/Development/projects/greenlease/node_modules/@shopify/polaris/build/esm/styles.css": {
+    "file": "assets/styles-DT9i95_b.css",
+    "src": "/Users/maxime/Development/projects/greenlease/node_modules/@shopify/polaris/build/esm/styles.css"
+  },
+  "virtual:remix/server-build": {
+    "file": "index.js",
+    "name": "server-build",
+    "src": "virtual:remix/server-build",
+    "isEntry": true,
+    "css": [
+      "assets/server-build-COVlfczw.css"
+    ]
+  }
+}

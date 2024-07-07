@@ -1,0 +1,1 @@
+import{a as s,r,j as t}from"./index-D0piyJ7G.js";import{R as e}from"./browser-Box22kee.js";import"./components-B1afT1Y1.js";var a,o=s;o.createRoot,a=o.hydrateRoot;r.startTransition(()=>{a(document,t.jsx(r.StrictMode,{children:t.jsx(e,{})}))});
