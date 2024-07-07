@@ -17,7 +17,7 @@ function formatNumberAsFloat(num: number): number {
 export async function action({
                                  request,
                              }: ActionFunctionArgs) {
-    console.log('---hit proxy---')
+    console.log('---hit proxy---',request)
     const data = await request.json();
     console.log('data', data);
     const {session, admin, storefront} = await authenticate.public.appProxy(request);
