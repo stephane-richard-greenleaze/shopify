@@ -17,7 +17,7 @@ function formatNumberAsFloat(num: number): number {
 export async function action({
                                  request,
                              }: ActionFunctionArgs) {
-    //console.log('---hit proxy---',request);
+    console.log('---hit proxy---',request);
     console.log('API KEY', process.env.SHOPIFY_API_KEY);
     console.log('API KEY secret', process.env.SHOPIFY_API_SECRET);
     console.log('API KEY secret', process.env.SHOPIFY_APP_URL);
