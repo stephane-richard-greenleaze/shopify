@@ -29,6 +29,22 @@ const shopify = shopifyApp({
   hooks: {
     afterAuth: async ({ session }) => {
       shopify.registerWebhooks({ session });
+      console.log('running after auth');
+      const token = session.accessToken;
+      console.log('TOKEN', token);
+      await prisma.session.create({
+        data: {
+          id: session.id,
+          shop: session.shop,
+          state: session.state,
+          isOnline: session.isOnline,
+          scope: session.scope,
+          expires: session.expires ? new Date(session.expires) : null,
+          accessToken: session.accessToken,
+          userId: session.userId ? BigInt(session.userId) : null,
+        },
+      });
+      
     },
   },
   future: {
