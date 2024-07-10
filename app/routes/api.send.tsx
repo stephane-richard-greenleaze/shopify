@@ -20,7 +20,10 @@ export async function action({
     console.log('---hit proxy---',request)
     const data = await request.json();
     console.log('data', data);
-    const {session, admin, storefront} = await authenticate.public.appProxy(request);
+    const authResult = await authenticate.public.appProxy(request);
+    console.log('authresult', authResult);
+
+    const {session, admin, storefront} = authResult;
 	// Use private access token on requests that don't come from Shopify
    // const { storefront } = await unauthenticated.storefront('quickstart-682bebea');
     console.log('Session', session);
