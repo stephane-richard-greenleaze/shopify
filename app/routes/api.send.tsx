@@ -21,8 +21,8 @@ export async function action({
     console.log('API KEY', process.env.SHOPIFY_API_KEY);
     console.log('API KEY secret', process.env.SHOPIFY_API_SECRET);
     console.log('API KEY secret', process.env.SHOPIFY_APP_URL);
-    const admin2 = await authenticate.admin(request);
-    console.log('admin2',admin2);
+    //const admin2 = await authenticate.admin(request);
+    //console.log('admin2',admin2);
     const data = await request.json();
     console.log('data', data);
     const authResult = await authenticate.public.appProxy(request);
@@ -56,13 +56,14 @@ export async function action({
         console.log('orderData', orderData);
 
 
-        const orderResponse = await admin.rest.post({
-            path: 'admin/api/2024-04/checkouts.json',
-            data: orderData,
-        });
-        const res = await orderResponse.json();
-        console.log('response order', res.data);
-        const token_checkout = res.checkout.token;
+        // const orderResponse = await admin.rest.post({
+        //     path: 'admin/api/2024-04/checkouts.json',
+        //     data: orderData,
+        // });
+        // const res = await orderResponse.json();
+        // console.log('response order', res.data);
+        //
+        // const token_checkout = res.checkout.token;
 
 
         const uniq = generateUniq();
@@ -92,7 +93,7 @@ export async function action({
                 }
             ],
             "cartId": getRandomArbitrary(1,99999), // peux pas string
-            "cartSecureKey": token_checkout,
+            "cartSecureKey": "secure_key"+ uniq,
             "totalInitialFees": 20 // todo : take from param app
         }
 
