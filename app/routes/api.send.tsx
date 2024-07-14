@@ -18,8 +18,6 @@ export async function action({
                                  request,
                              }: ActionFunctionArgs) {
     console.log('---hit proxy---',request);
-    console.log('---hit proxy URL---',request.parsedURL);
-    console.log('---hit proxy URL---',request.parsedURL.searchParams);
 
     console.log('API KEY', process.env.SHOPIFY_API_KEY);
     console.log('API KEY secret', process.env.SHOPIFY_API_SECRET);
@@ -36,8 +34,8 @@ export async function action({
    // const { storefront } = await unauthenticated.storefront('quickstart-682bebea');
     console.log('Session', session);
     //console.log('storefront', storefront);
-
-    const shop = session ? session.shop : '6312d3-b1.myshopify.com';
+    const shopPass = data.shop;
+    const shop = session ? session.shop : data.shop;
     console.log('-----try retrieve cart---', JSON.parse(data.cartContents))
     const cartContents = JSON.parse(data.cartContents);
     //var base_url = process.env.SHOPIFY_APP_URL + "/api/redirect";
