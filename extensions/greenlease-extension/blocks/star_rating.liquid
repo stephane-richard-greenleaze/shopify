@@ -372,15 +372,20 @@
 
 	async function updateMonthlyPayment(rule) {
 		console.log("update monthly paymetn");
-		const fraisLivraisonResponse = await fetch("/api/get-frais-livraison", {
-			method: "GET",
+		// get delivery
+		const shopDomain = "{{ shop.domain }}";
+		const fraisLivraisonResponse = await fetch("/apps/greenlease-proxy/api/get-frais-livraison", {
+			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
 				'Access-Control-Allow-Origin': '*',
 			},
+			body: JSON.stringify({
+				"shop": shopDomain
+			}),
 		});
 		const fraisLivraisonData = await fraisLivraisonResponse.json();
-		fraisLivraison = fraisLivraisonData.fraisLivraison;
+		fraisLivraison = fraisLivraisonData.deliveryFee;
 
 
 		try {
@@ -395,7 +400,7 @@
 
 			// Get the price of the first item in the cart (assuming it's prixHT)
 			const prixHT = cartContents && cartContents?.items && cartContents?.items[0] ? parseFloat(cartContents?.items[0]?.price) / 100 : 20;
-			const tva = 20 / 100;
+			const tva = 120 / 100;
 			const duration = 24;
 			const calculatePayment = parseRule(rule, {tva, prixHT, duration});
 			const paiementMensuel = calculatePayment();
@@ -481,7 +486,7 @@
 
 		console.log('minPricesByDuration', minPricesByDuration)
 		// Create and append buttons based on available durations
-		const tva = 20 / 100;
+		const tva = 120 / 100;
 		const cartContentsRes = await fetch(window.Shopify.routes.root + 'cart.js');
 		const cartContents = await cartContentsRes.json();
 
@@ -513,14 +518,18 @@
 		document.querySelectorAll('.open-modal').forEach(button => {
 			button.addEventListener('click', function () {
 				const value = this.getAttribute('data-value');
+				const duration = this.getAttribute('data-duration');
 				if (!value) {
 					console.error('No data-value attribute found.');
 				}
+				updateMonthlyPayment(minPricesByDuration[duration].rule);
 				document.getElementById('monthSlider').value = value;
 
 				const modal = document.querySelector('.modal');
 				modal.style.display = 'block';
 				document.body.appendChild(modal);
+
+
 				updateSliderValueDisplay();
 
 
