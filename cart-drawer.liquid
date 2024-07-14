@@ -41,6 +41,20 @@
 
 	async function updateMonthlyPaymentCart(rule) {
 		try {
+			const shopDomain = "{{ shop.domain }}";
+			const fraisLivraisonResponse = await fetch("/apps/greenlease-proxy/api/get-frais-livraison", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+					'Access-Control-Allow-Origin': '*',
+				},
+				body: JSON.stringify({
+					"shop": shopDomain
+				}),
+			});
+			const fraisLivraisonData = await fraisLivraisonResponse.json();
+			fraisLivraison = fraisLivraisonData.deliveryFee;
+
 			// Fetch cart contents
 			const cartContentsRes = await fetch(window.Shopify.routes.root + 'cart.js');
 			const cartContents = await cartContentsRes.json();
@@ -53,7 +67,7 @@
 
 			// Get the price of the first item in the cart (assuming it's prixHT)
 			const prixHT = parseFloat(cartContents.items[0].price) / 100;
-			const tva = 20 / 100;
+			const tva = 120 / 100;
 			const duration = 36;
 			const calculatePayment = parseRule(rule, {tva, prixHT, duration});
 			const paiementMensuel = calculatePayment();
@@ -63,6 +77,7 @@
 			const fixed = paiementMensuel.toFixed(2);
 			console.log('update', fixed);
 			document.getElementById('paiementMensuelCart').innerHTML = `${fixed} €`;
+			document.getElementById('apportInitial').innerText = (paiementMensuel + fraisLivraison).toFixed(2) + ' €';
 			document.getElementById('paidTodayCart').innerHTML = `${fixed} €`;
 
 
@@ -685,16 +700,10 @@
                 <div class="modalGreenleaze" style="z-index:99999999">
                     <div class="modal-content">
                         <div onclick="closeModalGreenleaze()" class="close">&times;</div>
-                        <div style="display: flex;gap: 30px;padding: 40px;">
+                        <div class="modalContainer" style="display: flex;gap: 30px;padding: 40px;">
                             <div class="left">
-                                <h3 style="font-family: Baloo;
-font-size: 23px;
-font-weight: 400;
-line-height: 36.2px;
-text-align: left;
-margin-top:0;
-">La consommation circulaire avec GreenLeaze</h3>
-                                <div style="display: flex">
+                                <h3 class="title-modal">La consommation circulaire avec GreenLeaze</h3>
+                                <div class="text-modal">
                                     <img src="https://cdn.shopify.com/extensions/d6ff67d1-5ebe-428f-ba0e-42ab96cf5a13/greenleaze-6/assets/number.png" alt="Number Image" width="100"  height="100%" style="margin-right: 20px">
                                     <div>
                                         <div style="margin-bottom: 30px;font-size:14px;">Choisissez la durée de votre abonnement</div>
@@ -717,11 +726,10 @@ margin-top:0;
                                     </div>
 
                                 </div>
-                                <div style="font-family: Baloo; font-size: 23px; font-weight: 400; line-height: 36.2px; text-align: center;margin-top: 47px;">
+                                <div class="abo-title">
                                     Votre abonnement test
                                 </div>
-                                <div class="table"
-                                     style="margin-top:20px; font-family: Baloo; font-size: 20px; font-weight: 400; line-height: 36.2px">
+                                <div class="table">
                                     <div style="text-align: left">
                                         <span>Paiement mensuel</span>
                                         <span id="paiementMensuelCart"></span>
@@ -737,7 +745,6 @@ margin-top:0;
                                     </div>
                                 </div>
                                 <div style="margin:auto;text-align:center">
-
                                     <button class="buttonOrder" onclick="order()">Commander</button>
                                 </div>
                             </div>
@@ -921,6 +928,84 @@ margin-top:0;
                         line-height: normal;
 
                     }
+
+                    .text-modal {
+                        display: flex;
+                    }
+
+                    .abo-title {
+                        font-family: Baloo;
+                        font-size: 23px;
+                        font-weight: 400;
+                        line-height: 36.2px;
+                        text-align: center;
+                        margin-top: 47px;
+                    }
+
+                    .title-modal {
+                        font-family: Baloo;
+                        font-size: 23px;
+                        font-weight: 400;
+                        line-height: 36.2px;
+                        text-align: left;
+                        margin-top: 0;
+
+                    }
+
+                    .table {
+                        margin-top: 20px;
+                        font-family: Baloo;
+                        font-size: 20px;
+                        font-weight: 400;
+                        line-height: 36.2px
+                    }
+
+
+                    @media screen and (max-width: 1200px) {
+                        .title-modal {
+                            font-size: 17px;
+                            text-align: center !important;
+                        }
+
+                        .abo-title {
+                            margin-top: 10px !important;
+                            font-size: 20px;
+                        }
+
+                        .table {
+                            font-family: inherit!important;
+                            font-size: 16px!important;
+                            font-weight: 100!important;
+                        }
+                        .modalContainer {
+                            display: block !important;
+                            padding: 0 !important;
+                        }
+
+                        .text-modal {
+                            display: none !important;
+                        }
+
+                        .left {
+                            margin: auto !important;
+                            width: 100% !important;
+                        }
+
+                        .left img {
+                            display: none !important;
+                        }
+
+                        .right {
+                            margin: auto !important;
+                            width: 100% !important;
+                        }
+
+                        .right .slider-container {
+                            width: 100% !important;
+                        }
+                    }
+
+
                 </style>
 
 
