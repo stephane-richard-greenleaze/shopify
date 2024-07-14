@@ -4,8 +4,11 @@
     <hr/>
     <div style="display:flex;margin-bottom: 20px">
         <div>
-            <div  style="font-size:13px;font-family: 'helvetica',serif">Votre vélo par abonnement, à partir de 40€ / mois</div>
-            <div style="font-size:11px;font-family: 'helvetica',serif">Garantie casse et vol incluse, sans franchise</div>
+            <div style="font-size:13px;font-family: 'helvetica',serif">Votre vélo par abonnement, à partir de 40€ /
+                mois
+            </div>
+            <div style="font-size:11px;font-family: 'helvetica',serif">Garantie casse et vol incluse, sans franchise
+            </div>
         </div>
         <div>
             <img src="{{ 'greenlease.png' | asset_url }}" alt="greenlease logo" width="100%" height="70">
@@ -13,12 +16,11 @@
     </div>
 
 
-  <div class="Turneebuttons">
+    <div class="Turneebuttons">
 
 
-  </div>
+    </div>
 </div>
-
 
 
 <div class="modal" style="z-index:99999999">
@@ -28,11 +30,16 @@
             <div class="left">
                 <h3 class="title-modal">La consommation circulaire avec GreenLeaze</h3>
                 <div class="text-modal">
-                    <img src="{{ 'number.png' | asset_url }}" alt="Number Image" width="100"  height="100%" style="margin-right: 20px">
+                    <img src="{{ 'number.png' | asset_url }}" alt="Number Image" width="100" height="100%"
+                         style="margin-right: 20px">
                     <div>
                         <div style="margin-bottom: 30px;font-size:14px;">Choisissez la durée de votre abonnement</div>
-                        <div style="margin-bottom: 30px;font-size:14px;">Payez le 1er mois et validez votre abonnement en 3 clics</div>
-                        <div style="font-size:14px;">Profitez de la garantie incluse et de la flexibilité de votre abonnement !</div>
+                        <div style="margin-bottom: 30px;font-size:14px;">Payez le 1er mois et validez votre abonnement
+                            en 3 clics
+                        </div>
+                        <div style="font-size:14px;">Profitez de la garantie incluse et de la flexibilité de votre
+                            abonnement !
+                        </div>
                     </div>
                 </div>
                 <div>
@@ -53,8 +60,7 @@
                 <div class="abo-title">
                     Votre abonnement
                 </div>
-                <div class="table"
-                     style="margin-top:20px; font-family: Baloo; font-size: 20px; font-weight: 400; line-height: 36.2px">
+                <div class="table">
                     <div style="text-align: left">
                         <span>Paiement mensuel</span>
                         <span id="paiementMensuel"></span>
@@ -83,32 +89,36 @@
     .left {
         width: 50%;
     }
+
     .right {
         width: 50%;
     }
+
     .Turneebuttons {
         display: flex;
         gap: 10px;
         flex-wrap: wrap;
     }
+
     .buttonOrder {
         border-radius: 20px;
         background: #0D5537;
         font-size: 18px;
         letter-spacing: 2px;
-        color:white;
+        color: white;
         border: 0;
-        padding-top:10px;
-        padding-bottom:10px;
+        padding-top: 10px;
+        padding-bottom: 10px;
         padding-left: 20px;
         padding-right: 20px;
-        margin-top:40px;
-        cursor:pointer;
+        margin-top: 40px;
+        cursor: pointer;
         font-family: Baloo, serif;
         font-style: normal;
         font-weight: 400;
         line-height: normal;
     }
+
     .modal {
         display: none; /* Hidden by default */
         position: fixed; /* Stay in place */
@@ -118,8 +128,8 @@
         width: 100%; /* Full width */
         height: 100%; /* Full height */
         overflow: auto; /* Enable scroll if needed */
-        background-color: rgb(0,0,0); /* Fallback color */
-        background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+        background-color: rgb(0, 0, 0); /* Fallback color */
+        background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
     }
 
     .modal-content {
@@ -130,7 +140,7 @@
         width: 80%; /* Adjust based on screen size */
         max-width: 800px; /* Maximum width set to 500px */
         border-radius: 20px;
-        padding:20px;
+        padding: 20px;
     }
 
     .close {
@@ -163,12 +173,13 @@
 
     .open-modal {
         border: 1px solid rgba(204, 204, 204, 1);
-        padding:20px;
+        padding: 20px;
         background: white;
         border-radius: 14px;
         cursor: pointer;
-        display:flex;
+        display: flex;
     }
+
     .open-modal:hover {
         background: rgba(214, 248, 137, 1);
     }
@@ -189,9 +200,11 @@
         outline: none;
         transition: opacity .2s;
     }
+
     #monthSlider:hover {
         opacity: 1;
     }
+
     #monthSlider::-webkit-slider-thumb {
         -webkit-appearance: none;
         appearance: none;
@@ -206,6 +219,7 @@
         text-align: center;
         line-height: 25px;
     }
+
     #monthSlider::-moz-range-thumb {
         -webkit-appearance: none;
         appearance: none;
@@ -220,11 +234,13 @@
         text-align: center;
         line-height: 25px;
     }
+
     #sliderValue {
         margin-top: 20px;
         font-size: 20px;
         color: #333;
     }
+
     .slider-labels {
         display: flex;
         justify-content: space-between;
@@ -240,11 +256,18 @@
         line-height: normal;
 
     }
+
     .text-modal {
         display: flex;
     }
+
     .abo-title {
-        font-family: Baloo; font-size: 23px; font-weight: 400; line-height: 36.2px; text-align: center;margin-top: 47px;
+        font-family: Baloo;
+        font-size: 23px;
+        font-weight: 400;
+        line-height: 36.2px;
+        text-align: center;
+        margin-top: 47px;
     }
 
     .title-modal {
@@ -253,39 +276,60 @@
         font-weight: 400;
         line-height: 36.2px;
         text-align: left;
-        margin-top:0;
+        margin-top: 0;
 
+    }
+
+    .table {
+        margin-top: 20px;
+        font-family: Baloo;
+        font-size: 20px;
+        font-weight: 400;
+        line-height: 36.2px
     }
 
 
     @media screen and (max-width: 1200px) {
         .title-modal {
             font-size: 17px;
+            text-align: center !important;
         }
+
         .abo-title {
-            margin-top: 10px!important;
+            margin-top: 10px !important;
             font-size: 20px;
         }
-       .modalContainer {
-           display: block!important;
-           padding: 0!important;
-       }
+
+        .table {
+            font-family: inherit!important;
+            font-size: 16px!important;
+            font-weight: 100!important;
+        }
+        .modalContainer {
+            display: block !important;
+            padding: 0 !important;
+        }
+
         .text-modal {
-            display: none!important;
+            display: none !important;
         }
+
         .left {
-            margin:auto!important;
-            width: 100%!important;
+            margin: auto !important;
+            width: 100% !important;
         }
+
         .left img {
-           display: none!important;
+            display: none !important;
         }
+
         .right {
-            margin:auto!important;
-            width: 100%!important;
+            margin: auto !important;
+            width: 100% !important;
         }
+
         .right .slider-container {
-            width: 100%!important;
+            width: 100% !important;
         }
     }
 
@@ -303,12 +347,12 @@
 	// 	slider.oninput = function() {
 	// 		sliderValue.innerHTML = monthValues[this.value] + ' months';
 	// 	};
-    // }
+	// }
 
-	document.addEventListener('DOMContentLoaded', function() {
+	document.addEventListener('DOMContentLoaded', function () {
 		const slider = document.getElementById('monthSlider');
 		if (slider) {
-			slider.addEventListener('input', async function() {
+			slider.addEventListener('input', async function () {
 				console.log('update slider');
 
 				const monthValues = [12, 18, 24, 36];
@@ -320,8 +364,6 @@
 			});
 		}
 	});
-
-
 
 
 	function parseRule(rule, values) {
@@ -341,7 +383,7 @@
 			}
 
 			// Get the price of the first item in the cart (assuming it's prixHT)
-			const prixHT = cartContents && cartContents?.items && cartContents?.items[0]  ? parseFloat(cartContents?.items[0]?.price) / 100 : 20;
+			const prixHT = cartContents && cartContents?.items && cartContents?.items[0] ? parseFloat(cartContents?.items[0]?.price) / 100 : 20;
 			const tva = 20 / 100;
 			const duration = 24;
 			const calculatePayment = parseRule(rule, {tva, prixHT, duration});
@@ -394,13 +436,13 @@
 	}
 
 
-	const fetchingPricing = async() => {
+	const fetchingPricing = async () => {
 		console.log('fetching pricing');
 		const response = await fetch("/apps/greenlease-proxy/api/pricing", {
 			method: "GET",
 			headers: {
 				"Content-Type": "application/json",
-				'Access-Control-Allow-Origin':  '*',
+				'Access-Control-Allow-Origin': '*',
 			},
 		});
 		const data = await response.json();
@@ -410,7 +452,7 @@
 		// Aggregate the minimum prices for each duration
 		priceRules.forEach(priceRule => {
 			const duration = priceRule.duration;
-			if(duration != 1 ){
+			if (duration != 1) {
 				const minPrice = parseFloat(priceRule.minPrice);
 				if (!minPricesByDuration[duration] || minPrice < minPricesByDuration[duration].minPrice) {
 					minPricesByDuration[duration] = {
@@ -436,8 +478,12 @@
 		Object.keys(minPricesByDuration).forEach((duration, index) => {
 
 			console.log('duration', duration);
-			const priceProduct =  prixHT ?  prixHT : 20.00;
-			const calculatePayment = parseRule(minPricesByDuration[duration].rule, {tva, prixHT : priceProduct, duration});
+			const priceProduct = prixHT ? prixHT : 20.00;
+			const calculatePayment = parseRule(minPricesByDuration[duration].rule, {
+				tva,
+				prixHT: priceProduct,
+				duration
+			});
 			const paiementMensuel = calculatePayment();
 
 			const button = document.createElement('button');
@@ -453,7 +499,7 @@
 		updateMonthlyPayment(minPricesByDuration['24'].rule);
 
 		document.querySelectorAll('.open-modal').forEach(button => {
-			button.addEventListener('click', function() {
+			button.addEventListener('click', function () {
 				const value = this.getAttribute('data-value');
 				if (!value) {
 					console.error('No data-value attribute found.');
@@ -466,21 +512,20 @@
 				updateSliderValueDisplay();
 
 
-
 			});
 		});
-    }
-	document.addEventListener('DOMContentLoaded', function() {
+	}
+	document.addEventListener('DOMContentLoaded', function () {
 
-	    fetchingPricing();
+		fetchingPricing();
 	});
 
 
 	// on moving slider
-	document.addEventListener('DOMContentLoaded', function() {
+	document.addEventListener('DOMContentLoaded', function () {
 		const slider = document.getElementById('monthSlider');
 		if (slider) {
-			slider.addEventListener('input', async function() {
+			slider.addEventListener('input', async function () {
 				console.log('update slider');
 
 				const monthValues = [12, 18, 24, 36];
@@ -497,9 +542,9 @@
 		const slider = document.getElementById('monthSlider');
 		const monthValues = [12, 18, 24, 36];
 		const sliderValue = document.getElementById('sliderValue');
-		if(sliderValue){
+		if (sliderValue) {
 			sliderValue.innerHTML = monthValues[slider.value] + ' mois';
-        }
+		}
 
 	}
 
@@ -522,7 +567,7 @@
 			},
 			body: JSON.stringify({
 				"cartContents": JSON.stringify(cartContents),
-                "shop": shopDomain
+				"shop": shopDomain
 			}),
 		})  // Adjust this URL based on your server setup
 			.then(response => response.json())
@@ -540,9 +585,8 @@
 	});
 
 
-
 	// Close the modal if the user clicks outside of it
-	window.onclick = function(event) {
+	window.onclick = function (event) {
 		var modal = document.querySelector('.modal');
 		// Check if the click was outside the modal content
 		if (event.target == modal) {
@@ -557,7 +601,6 @@
   "name": "Green lease",
   "target": "section",
   "settings": [
-
   ]
 }
 
