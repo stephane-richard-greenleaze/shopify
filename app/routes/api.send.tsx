@@ -18,6 +18,9 @@ export async function action({
                                  request,
                              }: ActionFunctionArgs) {
     console.log('---hit proxy---',request);
+    console.log('---hit proxy URL---',request.parsedURL);
+    console.log('---hit proxy URL---',request.parsedURL.searchParams);
+
     console.log('API KEY', process.env.SHOPIFY_API_KEY);
     console.log('API KEY secret', process.env.SHOPIFY_API_SECRET);
     console.log('API KEY secret', process.env.SHOPIFY_APP_URL);
@@ -94,7 +97,7 @@ export async function action({
             ],
             "cartId": getRandomArbitrary(1,99999), // peux pas string
             "cartSecureKey": "secure_key"+ uniq,
-            "totalInitialFees": 20 // todo : take from param app
+            "totalInitialFees": 20
         }
 
         console.log(payload);
