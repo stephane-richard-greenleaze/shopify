@@ -14,12 +14,12 @@ export async function action({
     try {
         const settings = await prisma.shop.findFirst({
             where: {
-                key: "deliveryFee",
                 shopId: shopId
             },
         });
+        console.log(settings);
 
-        return json({ deliveryFee: settings ? parseFloat(settings.value) : 0 });
+        return json({ deliveryFee: settings ? parseFloat(settings.deliveryFee) : 0 });
     } catch (error) {
         console.log(error);
         return json({ error: "Failed to retrieve frais livraison" }, { status: 500 });
