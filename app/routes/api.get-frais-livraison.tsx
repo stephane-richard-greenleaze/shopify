@@ -1,7 +1,9 @@
-import { json, LoaderFunction } from "@remix-run/node";
+import {ActionFunctionArgs, json, LoaderFunction} from "@remix-run/node";
 import prisma from "~/db.server"; // Adjust the path to your Prisma instance
 
-export const loader: LoaderFunction = async ({ request }) => {
+export async function action({
+                                 request,
+                             }: ActionFunctionArgs) {
     const data = await request.json();
     const shopId = data.shop;
 
@@ -21,4 +23,4 @@ export const loader: LoaderFunction = async ({ request }) => {
     } catch (error) {
         return json({ error: "Failed to retrieve frais livraison" }, { status: 500 });
     }
-};
+}
