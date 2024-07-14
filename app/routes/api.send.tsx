@@ -56,6 +56,19 @@ export async function action({
         };
         console.log('orderData', orderData);
 
+        const shopRecord = await prisma.shop.findUnique({
+            where: {
+                shopId: shop
+            }
+        });
+
+        if (!shopRecord) {
+            console.log('shop not found');
+        }
+
+        const deliveryFee = shopRecord ? parseFloat(shopRecord.deliveryFee) : 20;
+        console.log('Delivery Fee:', deliveryFee);
+
 
         // const orderResponse = await admin.rest.post({
         //     path: 'admin/api/2024-04/checkouts.json',
@@ -65,6 +78,7 @@ export async function action({
         // console.log('response order', res.data);
         //
         // const token_checkout = res.checkout.token;
+
 
 
         const uniq = generateUniq();
@@ -95,7 +109,7 @@ export async function action({
             ],
             "cartId": getRandomArbitrary(1,99999), // peux pas string
             "cartSecureKey": "secure_key"+ uniq,
-            "totalInitialFees": 20
+            "totalInitialFees": deliveryFee
         }
 
         console.log(payload);
