@@ -1,7 +1,7 @@
 import {ActionFunctionArgs, json} from "@remix-run/node";
 import {authenticate, unauthenticated} from "~/shopify.server";
 import {getSession} from "~/session.server";
-
+import { prisma } from "~/db.server";
 const generateUniq = (prefix: string = '') => {
     const time = Date.now().toString(36); // Convert timestamp to base-36
     const random = Math.random().toString(36).substr(2, 9); // Generate a random string
