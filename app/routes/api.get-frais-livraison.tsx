@@ -21,6 +21,7 @@ export async function action({
 
         return json({ deliveryFee: settings ? parseFloat(settings.value) : 0 });
     } catch (error) {
+        console.log(error);
         return json({ error: "Failed to retrieve frais livraison" }, { status: 500 });
     }
 }
