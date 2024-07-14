@@ -67,7 +67,7 @@
                     </div>
                     <div style="text-align: left">
                         <span>Apport initial</span>
-                        <span>0,00€</span>
+                        <span id="apportInitial"></span>
                     </div>
                     <hr style="margin-top: 20px;margin-bottom:20px;">
                     <div style="text-align: left">
@@ -372,6 +372,17 @@
 
 	async function updateMonthlyPayment(rule) {
 		console.log("update monthly paymetn");
+		const fraisLivraisonResponse = await fetch("/api/get-frais-livraison", {
+			method: "GET",
+			headers: {
+				"Content-Type": "application/json",
+				'Access-Control-Allow-Origin': '*',
+			},
+		});
+		const fraisLivraisonData = await fraisLivraisonResponse.json();
+		fraisLivraison = fraisLivraisonData.fraisLivraison;
+
+
 		try {
 			// Fetch cart contents
 			const cartContentsRes = await fetch(window.Shopify.routes.root + 'cart.js');
@@ -392,6 +403,7 @@
 			console.log("Calculated payment per month:", paiementMensuel);
 
 			document.getElementById('paiementMensuel').innerText = paiementMensuel.toFixed(2) + ' €';
+			document.getElementById('apportInitial').innerText = (paiementMensuel + fraisLivraison).toFixed(2) + ' €';
 			document.getElementById('paidToday').innerText = paiementMensuel.toFixed(2) + ' €';
 
 		} catch (error) {
