@@ -18,7 +18,6 @@ export const links = () => [{rel: "stylesheet", href: polarisStyles}];
 export async function loader({request}: LoaderFunctionArgs) {
     console.log('LOADER APP -----');
     //const {admin, session} = await authenticate.admin(request);
-    console.log('admin', admin);
     const url = new URL(request.url);
     const shopId = url.searchParams.get("shop");
     console.log('shop', shopId);
