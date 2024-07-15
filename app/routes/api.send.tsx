@@ -77,6 +77,8 @@ export async function action({
                     path: 'admin/api/2024-04/checkouts.json',
                     data: orderData,
                 });
+                console.log(orderResponse.status);
+                console.log(orderResponse.statusText);
                 const res = await orderResponse.json();
                 console.log('response order', res.data);
                 const token_checkout = res.checkout.token;
