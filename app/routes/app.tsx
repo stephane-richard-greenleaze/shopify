@@ -17,7 +17,7 @@ export const links = () => [{rel: "stylesheet", href: polarisStyles}];
 // };
 export async function loader({request}: LoaderFunctionArgs) {
     console.log('LOADER APP -----');
-    const {admin, session} = await authenticate.admin(request);
+    //const {admin, session} = await authenticate.admin(request);
     console.log('admin', admin);
     const url = new URL(request.url);
     const shopId = url.searchParams.get("shop");
@@ -37,7 +37,7 @@ export async function loader({request}: LoaderFunctionArgs) {
         apiKeyGreenlease: shop.apiKeyGreenlease,
         deliveryFee: shop.deliveryFee,
         shop: shopId,
-        accessToken: admin.rest.session.accessToken
+        //accessToken: admin.rest.session.accessToken
     });
 }
 
