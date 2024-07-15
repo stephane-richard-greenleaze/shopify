@@ -39,8 +39,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 export const action = async ({ request }: ActionFunctionArgs) => {
 
-  const {admin} = await authenticate.public.appProxy(request);
-  console.log('admin', admin);
   const url = new URL(request.url);
   const shopId = url.searchParams.get("shop");
   if (!shopId) {
@@ -50,7 +48,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.formData();
   const apiKeyGreenlease = formData.get('apiKeyGreenlease');
   const deliveryFee = formData.get('deliveryFee');
-
+  const accessToken = formData.get('accessToken');
   if (!apiKeyGreenlease || !deliveryFee) {
     return json({ error: 'API Key and Delivery Fee are required' }, { status: 400 });
   }
@@ -58,8 +56,8 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   // Save to database
   await prisma.shop.upsert({
     where: { shopId },
-    update: { apiKeyGreenlease, deliveryFee, accessToken: admin?.accessToken },
-    create: { shopId, apiKeyGreenlease, deliveryFee, accessToken: admin?.accessToken },
+    update: { apiKeyGreenlease, deliveryFee, accessToken: accessToken },
+    create: { shopId, apiKeyGreenlease, deliveryFee, accessToken: accessToken },
   });
 
   return json({ success: 'Clé API et frais de livraison sauvegardés !' });
