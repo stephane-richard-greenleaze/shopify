@@ -22,6 +22,7 @@ import { getSession, commitSession } from '~/session.server';
 export async function loader({ request }: LoaderFunctionArgs) {
   const url = new URL(request.url);
   const shopId = url.searchParams.get("shop");
+  const {admin, session} = await authenticate.admin(request);
   console.log('shop', shopId);
   if (!shopId) {
     return json({ error: "Shop ID is required" }, { status: 400 });
@@ -34,7 +35,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   if (!shop) {
     return json({ apiKeyGreenlease: "", deliveryFee: "", shop: shopId });
   }
-  return json({ apiKeyGreenlease: shop.apiKeyGreenlease, deliveryFee: shop.deliveryFee,shop: shopId });
+  return json({ apiKeyGreenlease: shop.apiKeyGreenlease, deliveryFee: shop.deliveryFee,shop: shopId,   accessToken: admin.rest.session.accessToken });
 }
 
 export const action = async ({ request }: ActionFunctionArgs) => {
