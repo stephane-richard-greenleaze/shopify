@@ -54,8 +54,6 @@ export async function action({
                 "line_items": lineItems,
             }
         };
-        console.log('orderData', orderData);
-
         const shopRecord = await prisma.shop.findUnique({
             where: {
                 shopId: shop
@@ -72,7 +70,8 @@ export async function action({
 
 
         if(admin){
-            console.log('try create order');
+            console.log('try create order', session.accessToken);
+            console.log('orderData', orderData);
             try {
                 const orderResponse = await admin.rest.post({
                     path: 'admin/api/2024-04/checkouts.json',
