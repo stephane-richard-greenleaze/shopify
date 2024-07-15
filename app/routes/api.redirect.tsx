@@ -1,17 +1,33 @@
 import { getSession } from "~/session.server";
-import { json } from "@remix-run/node";
+import {ActionFunctionArgs, json} from "@remix-run/node";
 import {authenticate} from "~/shopify.server";
+import prisma from "~/db.server";
 
 
 export async function loader({ request }) {
     console.log('-----hit proxy REDIRECT --- ')
     //const session = await getSession(request.headers.get('Cookie'));
-    const {session, admin, storefront} = await authenticate.public.appProxy(request);
+   // const {session, admin, storefront} = await authenticate.public.appProxy(request);
 
     const url = new URL(request.url);
+    console.log(url);
 
-	// Get the 'cart-secure-key' query parameter
-    const cartSecureKey = url.searchParams.get('cart-secure-key');
+    return json({status: 200});
+
+
+}
+
+
+
+export async function action({
+                                 request,
+                             }: ActionFunctionArgs) {
+    console.log('-----hit proxy REDIRECT ACTION --- ')
+    //const session = await getSession(request.headers.get('Cookie'));
+    const {session, admin, storefront} = await authenticate.public.appProxy(request);
+
+    const requestData = await request.json();
+    const cartSecureKey = requestData.cartSecureKey;
 
     console.log(cartSecureKey);
     if (!cartSecureKey) {
@@ -34,5 +50,5 @@ export async function loader({ request }) {
         return json({ error: 'Failed to create order' }, { status: 500, err: error, session: session });
     }
 
-
 }
+
