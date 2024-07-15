@@ -63,7 +63,7 @@ export async function loader({ request }) {
     </head>
     <body>
         <div class="container">
-            <h1>Greeenlease</h1>
+            <h1>Greenleaze</h1>
             <p style="color:red;">Une erreur s'est produite lors du parcours.</p>
                <p style="color:red;">Veuillez réessayer plus tard.</p>
             <a href="https://6312d3-b1.myshopify.com/">
