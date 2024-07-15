@@ -16,7 +16,9 @@ export const links = () => [{ rel: "stylesheet", href: polarisStyles }];
 //   return json({ apiKey:  });
 // };
 export async function loader({ request }: LoaderFunctionArgs) {
-  console.log('LOADER APP -----')
+  console.log('LOADER APP -----');
+  const { admin, session } = await authenticate.admin(request);
+  console.log('admin', admin);
   const url = new URL(request.url);
   const shopId = url.searchParams.get("shop");
   console.log('shop', shopId);
@@ -36,8 +38,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   console.log('hit app action');
-  const { admin, session } = await authenticate.admin(request);
-  console.log('admin', admin);
 
   const url = new URL(request.url);
   const shopId = url.searchParams.get("shop");
@@ -57,8 +57,8 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   // Save to database
   await prisma.shop.upsert({
     where: { shopId },
-    update: { apiKeyGreenlease, deliveryFee, accessToken: admin?.accessToken  },
-    create: { shopId, apiKeyGreenlease : apiKeyGreenlease, deliveryFee, accessToken: admin?.accessToken  },
+    update: { apiKeyGreenlease, deliveryFee, accessToken: "" },
+    create: { shopId, apiKeyGreenlease : apiKeyGreenlease, deliveryFee, accessToken: ""  },
   });
 
   return json({ success: 'Clé API et frais de livraison sauvegardés !' });
