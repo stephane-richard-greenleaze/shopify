@@ -73,14 +73,19 @@ export async function action({
 
         if(admin){
             console.log('try create order');
-            const orderResponse = await admin.rest.post({
-                path: 'admin/api/2024-04/checkouts.json',
-                data: orderData,
-            });
-            const res = await orderResponse.json();
-            console.log('response order', res.data);
+            try {
+                const orderResponse = await admin.rest.post({
+                    path: 'admin/api/2024-04/checkouts.json',
+                    data: orderData,
+                });
+                const res = await orderResponse.json();
+                console.log('response order', res.data);
+                const token_checkout = res.checkout.token;
+            }
+            catch (e) {
+                console.log(e);
+            }
 
-            const token_checkout = res.checkout.token;
         }
 
 
