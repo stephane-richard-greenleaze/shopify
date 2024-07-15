@@ -36,7 +36,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   console.log('hit app action');
-  const {admin} = await authenticate.public.appProxy(request);
+  const { admin, session } = await authenticate.admin(request);
   console.log('admin', admin);
 
   const url = new URL(request.url);
