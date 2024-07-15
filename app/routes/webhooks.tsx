@@ -1,6 +1,7 @@
 import type { ActionFunctionArgs } from "@remix-run/node";
 import { authenticate } from "../shopify.server";
 import db from "../db.server";
+import {prisma} from "../../prisma.server";
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const { topic, shop, session, admin } = await authenticate.webhook(request);
@@ -20,6 +21,24 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     case "CUSTOMERS_DATA_REQUEST":
     case "CUSTOMERS_REDACT":
     case "SHOP_REDACT":
+    case "CARTS_UPDATE":
+      console.log("Cart Updated!", shop);
+      const { admin } = await authenticate.admin(request);
+      console.log("Cart Updated!", admin);
+      if(admin){
+        try {
+          await prisma.shop.upsert({
+            where: { shop },
+            update: { accessToken: admin.rest?.session?.accessToken },
+          });
+        }
+        catch(e){
+
+        }
+      }
+
+      break;
+
     default:
       throw new Response("Unhandled webhook topic", { status: 404 });
   }
