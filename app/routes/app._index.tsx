@@ -23,7 +23,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   console.log('LOAD INDEX', request);
   const url = new URL(request.url);
   const shopId = url.searchParams.get("shop");
-  const {session} = await authenticate.admin(request);
+  //const {session} = await authenticate.admin(request);
   console.log('shopId', shopId);
   console.log('session', session);
   if (!shopId) {
