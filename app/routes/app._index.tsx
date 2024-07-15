@@ -71,7 +71,7 @@ export default function Index() {
   const submit = useSubmit();
   const isLoading =
     ["loading", "submitting"].includes(nav.state) && nav.formMethod === "POST";
-  const { apiKeyGreenlease, deliveryFee, shop } = useLoaderData();
+  const { apiKeyGreenlease, deliveryFee, shop, accessToken } = useLoaderData();
 
 
   return (
@@ -119,6 +119,7 @@ export default function Index() {
                           defaultValue={deliveryFee}
                       />
                     </div>
+                    <input type="hidden" name="accessToken" value={accessToken} />
 
                     <button type="submit" style={{padding: 10, background: '#0D5537', color : 'white', borderRadius: 20}}>Enregistrer vos informations</button>
                   </Form>
