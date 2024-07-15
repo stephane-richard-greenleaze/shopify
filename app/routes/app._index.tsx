@@ -19,9 +19,10 @@ import {authenticate, sessionStorage} from "../shopify.server";
 import { getSession, commitSession } from '~/session.server';
 
 
-export async function loader({ request,loadContext }: LoaderFunctionArgs) {
+export async function loader(app: LoaderFunctionArgs) {
   //console.log('LOAD INDEX', request);
-  console.log('loadContext',loadContext);
+  console.log('loadContext',app);
+  return json({ apiKeyGreenlease: "", deliveryFee: "", shop: shopId });
   const url = new URL(request.url);
   const shopId = url.searchParams.get("shop");
   //const {session} = await authenticate.admin(request);
