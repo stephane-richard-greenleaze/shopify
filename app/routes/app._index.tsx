@@ -19,11 +19,12 @@ import {authenticate, sessionStorage} from "../shopify.server";
 import { getSession, commitSession } from '~/session.server';
 
 
-export async function loader({ request }: LoaderFunctionArgs) {
-  console.log('LOAD INDEX', request);
+export async function loader({ request,loadContext }: LoaderFunctionArgs) {
+  //console.log('LOAD INDEX', request);
+  console.log('loadContext',loadContext);
   const url = new URL(request.url);
   const shopId = url.searchParams.get("shop");
-  const {session} = await authenticate.admin(request);
+  //const {session} = await authenticate.admin(request);
   console.log('shopId', shopId);
   if (!shopId) {
     return json({ error: "Shop ID is required" }, { status: 400 });
