@@ -38,6 +38,8 @@ export async function loader({ request }: LoaderFunctionArgs) {
 }
 
 export const action = async ({ request }: ActionFunctionArgs) => {
+  const { admin } = await shopify.authenticate.admin(request);
+
   const url = new URL(request.url);
   const shopId = url.searchParams.get("shop");
   if (!shopId) {
@@ -55,8 +57,8 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   // Save to database
   await prisma.shop.upsert({
     where: { shopId },
-    update: { apiKeyGreenlease, deliveryFee },
-    create: { shopId, apiKeyGreenlease, deliveryFee },
+    update: { apiKeyGreenlease, deliveryFee, accessToken: admin?.accessToken },
+    create: { shopId, apiKeyGreenlease, deliveryFee, accessToken: admin?.accessToken },
   });
 
   return json({ success: 'Clé API et frais de livraison sauvegardés !' });
