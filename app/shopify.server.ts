@@ -28,6 +28,7 @@ const shopify = shopifyApp({
   },
   hooks: {
     afterAuth: async ({ session }) => {
+      console.log('-----------AFTER AUTH!!!------');
       shopify.registerWebhooks({ session });
       console.log('running after auth');
       const token = session.accessToken;
@@ -44,7 +45,7 @@ const shopify = shopifyApp({
           userId: session.userId ? BigInt(session.userId) : null,
         },
       });
-      
+
     },
   },
   future: {
