@@ -15,7 +15,7 @@ import {
   Link,
   InlineStack,
 } from "@shopify/polaris";
-import { authenticate } from "../shopify.server";
+import {authenticate, sessionStorage} from "../shopify.server";
 import { getSession, commitSession } from '~/session.server';
 
 
@@ -23,11 +23,8 @@ export async function loader({ request }: LoaderFunctionArgs) {
   console.log('LOAD INDEX', request);
   const url = new URL(request.url);
   const shopId = url.searchParams.get("shop");
-  //const {session} = await authenticate.admin(request);
+  const {session} = await authenticate.admin(request);
   console.log('shopId', shopId);
-  //
-  const session = getSession();
-  console.log('session', session);
   if (!shopId) {
     return json({ error: "Shop ID is required" }, { status: 400 });
   }
