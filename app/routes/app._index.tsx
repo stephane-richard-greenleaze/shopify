@@ -38,8 +38,9 @@ export async function loader({ request }: LoaderFunctionArgs) {
 }
 
 export const action = async ({ request }: ActionFunctionArgs) => {
-  const { admin } = await shopify.authenticate.admin(request);
 
+  const {admin} = await authenticate.public.appProxy(request);
+  console.log('admin', admin);
   const url = new URL(request.url);
   const shopId = url.searchParams.get("shop");
   if (!shopId) {
