@@ -176,11 +176,21 @@ export async function action({
     console.log(session);
     //console.log(admin.rest.params.config);
     try {
-        const orderResponse = await admin.rest.post({
-            path: `admin/api/2024-04/checkouts/${cartSecureKey}/complete.json`,
-            data: {},
+        const orderResponse = await admin.rest.get({
+            path: `admin/api/2024-04/checkouts/${cartSecureKey}.json`,
         });
-        console.log('Order created:', orderResponse);
+
+        const resOrder = await orderResponse.json();
+        console.log('Order get:', orderResponse);
+
+        const data = {lineItems:resOrder.checkout.line_items}
+        const createOrder = await admin.rest.post({
+            path: `admin/api/2024-04/draft_orders.json`,
+            data: data,
+        });
+        const createOrderRes = await createOrder.json();
+        console.log('Order get:', createOrderRes);
+        
         return json({status: 200}); // redirec to sucess
     } catch (error) {
         console.error('Failed to create order:', error);

@@ -33,7 +33,6 @@ export async function action({
    // const { storefront } = await unauthenticated.storefront('quickstart-682bebea');
     console.log('Session', session);
     //console.log('storefront', storefront);
-    const shopPass = data.shop;
     const shop = session ? session.shop : data.shop;
     console.log('-----try retrieve cart---', JSON.parse(data.cartContents))
     const cartContents = JSON.parse(data.cartContents);
@@ -61,6 +60,8 @@ export async function action({
 
         if (!shopRecord) {
             console.log('shop not found');
+            // throw err
+            // API key need to be registed
         }
         const apiKey = shopRecord ? shopRecord.apiKeyGreenlease : '8660c63a-5c89-469c-a03c-2399ce5d9c18';
 
