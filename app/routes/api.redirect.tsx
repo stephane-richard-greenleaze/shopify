@@ -180,14 +180,25 @@ export async function action({
             path: `admin/api/2024-04/checkouts/${cartSecureKey}.json`,
         });
 
+
+
+
         const resOrder = await orderResponse.json();
         console.log('Order get:', resOrder);
 
-        const data = {lineItems:resOrder.checkout.line_items}
+        const orderData = {
+            "order": {
+                "line_items": resOrder.checkout.lineItems,
+                "transactions":[{"kind":"sale","status":"success","amount": resOrder.checkout.total_price}],
+                "total_tax": resOrder.checkout.total_tax,
+                "currency": "EUR"
+            }
+        };
         const createOrder = await admin.rest.post({
-            path: `admin/api/2024-04/draft_orders.json`,
-            data: data,
+            path: `admin/api/2024-04/orders.json`,
+            data: orderData,
         });
+
         const createOrderRes = await createOrder.json();
         console.log('Order get:', createOrderRes);
 
