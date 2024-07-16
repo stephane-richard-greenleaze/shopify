@@ -10,7 +10,7 @@ export async function loader({ request }) {
    // const {session, admin, storefront} = await authenticate.public.appProxy(request);
 
     const url = new URL(request.url);
-   if(url.searchParams.get('success') == 'false'){
+     if(url.searchParams.get('success') == 'false'){
        const htmlContent = `
     <!DOCTYPE html>
     <html lang="en">
@@ -82,7 +82,74 @@ export async function loader({ request }) {
 
    }
 
-    return json({status: 200});
+    const htmlContent = `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Shopify Page</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #f8f9fa;
+                color: #333;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+                margin: 0;
+            }
+            .container {
+                text-align: center;
+                background: white;
+                padding: 20px;
+                border-radius: 8px;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            }
+            h1 {
+                color: #2c3e50;
+            }
+            p {
+                font-size: 18px;
+                margin: 10px 0;
+            }
+            a {
+                text-decoration: none;
+            }
+            button {
+                background-color: #3498db;
+                color: white;
+                border: none;
+                padding: 10px 20px;
+                font-size: 16px;
+                border-radius: 4px;
+                cursor: pointer;
+                transition: background-color 0.3s;
+            }
+            button:hover {
+                background-color: #2980b9;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>Greenleaze</h1>
+            <p style="color:green;">Merci! Votre abonnement a bien été pris en compte </p>
+        
+            <a href="https://6312d3-b1.myshopify.com/">
+                <button>Revenir à la boutique</button>
+            </a>
+        </div>
+    </body>
+    </html>
+`;
+    return new Response(htmlContent, {
+        status: 200,
+        headers: {
+            'Content-Type': 'text/html',
+        },
+    });
 
 
 }
