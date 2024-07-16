@@ -68,7 +68,7 @@ export async function action({
         const deliveryFee = shopRecord ? parseFloat(shopRecord.deliveryFee) : 20;
         console.log('Delivery Fee:', deliveryFee);
 
-
+        let token_checkout = null;
         if(admin){
             console.log('try create order', session.accessToken);
             console.log('orderData', orderData);
@@ -81,9 +81,9 @@ export async function action({
                 console.log(JSON.stringify(orderData));
                 console.log(orderResponse.status);
                 console.log(orderResponse.statusText);
-                const res = await orderResponse.json();
-                console.log('response order', res.data);
-                const token_checkout = res.checkout.token;
+                const res = orderResponse.json();
+                console.log('response order', res);
+                token_checkout = res.checkout.token;
             }
             catch (e) {
                 console.log(e);
@@ -121,7 +121,7 @@ export async function action({
                 }
             ],
             "cartId": getRandomArbitrary(1,99999), // peux pas string
-            "cartSecureKey": "secure_key"+ uniq,
+            "cartSecureKey": token_checkout,
             "totalInitialFees": deliveryFee
         }
 
