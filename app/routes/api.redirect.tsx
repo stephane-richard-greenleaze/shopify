@@ -216,8 +216,6 @@ export async function action({
                     // You can add more customer fields here if needed, like email, phone, etc.
                 },
                 "shipping_address": {
-                    "first_name": firstName,
-                    "last_name": lastName,
                     "address1": address1Delivery,
                     "address2": "",
                     "city": address1DeliveryCity,
@@ -229,8 +227,6 @@ export async function action({
                     "lastName": lastnameDelivery
                 },
                 "billing_address": {
-                    "first_name": firstName,
-                    "last_name": lastName,
                     "address1": address1Billing,
                     "address2": "",
                     "city": address1BillingCity,
