@@ -18,7 +18,6 @@ export async function action({
                                  request,
                              }: ActionFunctionArgs) {
     console.log('---hit proxy---',request);
-
     console.log('API KEY', process.env.SHOPIFY_API_KEY);
     console.log('API KEY secret', process.env.SHOPIFY_API_SECRET);
     console.log('API KEY secret', process.env.SHOPIFY_APP_URL);
@@ -27,7 +26,7 @@ export async function action({
     const data = await request.json();
     console.log('data', data);
     const authResult = await authenticate.public.appProxy(request);
-    console.log('authresult', authResult);
+   // console.log('authresult', authResult);
 
     const {session, admin, storefront} = authResult;
 	// Use private access token on requests that don't come from Shopify
@@ -81,7 +80,7 @@ export async function action({
                 console.log(JSON.stringify(orderData));
                 console.log(orderResponse.status);
                 console.log(orderResponse.statusText);
-                const res = orderResponse.json();
+                const res = await orderResponse.json();
                 console.log('response order', res);
                 token_checkout = res.checkout.token;
             }
@@ -121,7 +120,7 @@ export async function action({
                 }
             ],
             "cartId": getRandomArbitrary(1,99999), // peux pas string
-            "cartSecureKey": token_checkout,
+            "cartSecureKey": token_checkout ?? "secure_key"+ uniq,
             "totalInitialFees": deliveryFee
         }
 
