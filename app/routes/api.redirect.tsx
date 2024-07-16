@@ -167,6 +167,7 @@ export async function action({
     const cartSecureKey = requestData.cartSecureKey;
     const firstName = requestData?.firstName ? requestData?.firstName: "not_set";
     const lastName = requestData?.lastName ? requestData?.lastName: "not_set";
+    const email = requestData?.email ? requestData?.email: "not_set";
     // delivery
     const address1Delivery = requestData?.deliveryAddress?.street ? requestData?.deliveryAddress?.street: "not_set";
     const address1DeliveryCity = requestData?.deliveryAddress?.city ? requestData?.deliveryAddress?.city: "not_set";
@@ -213,6 +214,7 @@ export async function action({
                 "customer": {
                     "first_name": firstName,
                     "last_name": lastName,
+                    "email": email
                     // You can add more customer fields here if needed, like email, phone, etc.
                 },
                 "shipping_address": {
