@@ -184,7 +184,7 @@ export async function action({
 
 
         const resOrder = await orderResponse.json();
-        console.log('Order get:', resOrder);
+        console.log('CHECKOUT get:', resOrder);
 
         const orderData = {
             "order": {
@@ -194,13 +194,14 @@ export async function action({
                 "currency": "EUR"
             }
         };
+        console.log('try order');
         const createOrder = await admin.rest.post({
             path: `admin/api/2024-04/orders.json`,
             data: orderData,
         });
 
         const createOrderRes = await createOrder.json();
-        console.log('Order get:', createOrderRes);
+        console.log('ORDER get:', createOrderRes);
 
         return json({status: 200}); // redirec to sucess
     } catch (error) {
