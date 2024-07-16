@@ -117,6 +117,7 @@ export async function action({
         return json({status: 200}); // redirec to sucess
     } catch (error) {
         console.error('Failed to create order:', error);
+        return json({status: 200});
         return json({ error: 'Failed to create order' }, { status: 500, err: error, session: session });
     }
 
