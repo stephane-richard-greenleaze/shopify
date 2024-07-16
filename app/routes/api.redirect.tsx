@@ -165,7 +165,8 @@ export async function action({
 
     const requestData = await request.json();
     const cartSecureKey = requestData.cartSecureKey;
-
+    const firstName = requestData?.firstName ? requestData?.firstName: "not_set";
+    const lastName = requestData?.lastName ? requestData?.lastName: "not_set";
     console.log(cartSecureKey);
     if (!cartSecureKey) {
         // Handle the case where the cart-secure-key is not provided
@@ -191,7 +192,12 @@ export async function action({
                 "line_items": resOrder.checkout.line_items,
                 "transactions":[{"kind":"sale","status":"success","amount": resOrder.checkout.total_price}],
                 "total_tax": resOrder.checkout.total_tax,
-                "currency": "EUR"
+                "currency": "EUR",
+                "customer": {
+                    "first_name": firstName,
+                    "last_name": lastName,
+                    // You can add more customer fields here if needed, like email, phone, etc.
+                }
             }
         };
         console.log('try order');
