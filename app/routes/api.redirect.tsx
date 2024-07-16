@@ -167,6 +167,26 @@ export async function action({
     const cartSecureKey = requestData.cartSecureKey;
     const firstName = requestData?.firstName ? requestData?.firstName: "not_set";
     const lastName = requestData?.lastName ? requestData?.lastName: "not_set";
+    // delivery
+    const address1Delivery = requestData?.deliveryAddress?.street ? requestData?.deliveryAddress?.street: "not_set";
+    const address1DeliveryCity = requestData?.deliveryAddress?.city ? requestData?.deliveryAddress?.city: "not_set";
+    const address1DeliveryCountry = requestData?.deliveryAddress?.country ? requestData?.deliveryAddress?.country: "not_set";
+    const address1DeliveryZip = requestData?.deliveryAddress?.postCode ? requestData?.deliveryAddress?.postCode: "not_set";
+    const phone = requestData?.deliveryAddress?.phone ? requestData?.deliveryAddress?.phone: "not_set";
+    const firstnameDelivery = requestData?.deliveryAddress?.firstName ? requestData?.deliveryAddress?.firstName: "not_set";
+    const lastnameDelivery = requestData?.deliveryAddress?.lastName ? requestData?.deliveryAddress?.lastName: "not_set";
+
+    // billing
+    const address1Billing = requestData?.invoiceAddress?.street ? requestData?.invoiceAddress?.street: "not_set";
+    const address1BillingCity = requestData?.invoiceAddress?.city ? requestData?.invoiceAddress?.city: "not_set";
+    const address1BillingCountry = requestData?.invoiceAddress?.country ? requestData?.invoiceAddress?.country: "not_set";
+    const address1BillingZip = requestData?.invoiceAddress?.postCode ? requestData?.invoiceAddress?.postCode: "not_set";
+    const phoneBilling = requestData?.invoiceAddress?.phone ? requestData?.invoiceAddress?.phone: "not_set";
+    const firstnameBilling = requestData?.invoiceAddress?.firstName ? requestData?.invoiceAddress?.firstName: "not_set";
+    const lastnameBilling = requestData?.invoiceAddress?.lastName ? requestData?.invoiceAddress?.lastName: "not_set";
+
+
+
     console.log(cartSecureKey);
     if (!cartSecureKey) {
         // Handle the case where the cart-secure-key is not provided
@@ -181,9 +201,6 @@ export async function action({
             path: `admin/api/2024-04/checkouts/${cartSecureKey}.json`,
         });
 
-
-
-
         const resOrder = await orderResponse.json();
         console.log('CHECKOUT get:', resOrder);
 
@@ -197,6 +214,32 @@ export async function action({
                     "first_name": firstName,
                     "last_name": lastName,
                     // You can add more customer fields here if needed, like email, phone, etc.
+                },
+                "shipping_address": {
+                    "first_name": firstName,
+                    "last_name": lastName,
+                    "address1": address1Delivery,
+                    "address2": "",
+                    "city": address1DeliveryCity,
+                    "province": "",
+                    "country": address1DeliveryCountry,
+                    "zip": address1DeliveryZip,
+                    "phone": phone,
+                    "firstName": firstnameDelivery,
+                    "lastName": lastnameDelivery
+                },
+                "billing_address": {
+                    "first_name": firstName,
+                    "last_name": lastName,
+                    "address1": address1Billing,
+                    "address2": "",
+                    "city": address1BillingCity,
+                    "province": "",
+                    "country": address1BillingCountry,
+                    "zip": address1BillingZip,
+                    "phone": phoneBilling,
+                    "firstName": firstnameBilling,
+                    "lastName": lastnameBilling
                 }
             }
         };
