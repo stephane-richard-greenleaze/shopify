@@ -181,7 +181,7 @@ export async function action({
         });
 
         const resOrder = await orderResponse.json();
-        console.log('Order get:', orderResponse);
+        console.log('Order get:', resOrder);
 
         const data = {lineItems:resOrder.checkout.line_items}
         const createOrder = await admin.rest.post({
@@ -190,7 +190,7 @@ export async function action({
         });
         const createOrderRes = await createOrder.json();
         console.log('Order get:', createOrderRes);
-        
+
         return json({status: 200}); // redirec to sucess
     } catch (error) {
         console.error('Failed to create order:', error);
