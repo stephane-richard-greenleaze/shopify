@@ -188,7 +188,7 @@ export async function action({
 
         const orderData = {
             "order": {
-                "line_items": resOrder.checkout.lineItems,
+                "line_items": resOrder.checkout.line_items,
                 "transactions":[{"kind":"sale","status":"success","amount": resOrder.checkout.total_price}],
                 "total_tax": resOrder.checkout.total_tax,
                 "currency": "EUR"
