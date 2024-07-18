@@ -1,0 +1,1008 @@
+{{ 'template-collection.css' | asset_url | stylesheet_tag }}
+{{ 'component-card.css' | asset_url | stylesheet_tag }}
+{{ 'component-price.css' | asset_url | stylesheet_tag }}
+
+{% if section.settings.image_shape == 'blob' %}
+    {{ 'mask-blobs.css' | asset_url | stylesheet_tag }}
+{%- endif -%}
+
+{%- unless section.settings.quick_add == 'none' -%}
+    {{ 'quick-add.css' | asset_url | stylesheet_tag }}
+{%- endunless -%}
+
+{%- if section.settings.quick_add == 'standard' -%}
+    <script src="{{ 'quick-add.js' | asset_url }}" defer="defer"></script>
+    <script src="{{ 'product-form.js' | asset_url }}" defer="defer"></script>
+{%- endif -%}
+
+{%- if section.settings.quick_add == 'bulk' -%}
+    <script src="{{ 'quick-add-bulk.js' | asset_url }}" defer="defer"></script>
+    <script src="{{ 'quantity-popover.js' | asset_url }}" defer="defer"></script>
+    <script src="{{ 'price-per-item.js' | asset_url }}" defer="defer"></script>
+    <script src="{{ 'quick-order-list.js' | asset_url }}" defer="defer"></script>
+{%- endif -%}
+
+{%- style -%}
+    .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+    }
+
+    @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top }}px;
+    padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+    }
+{%- endstyle -%}
+
+<div class="section-{{ section.id }}-padding gradient color-{{ section.settings.color_scheme }}">
+    {%- paginate collection.products by section.settings.products_per_page -%}
+        {% comment %} Sort is the first tabbable element when filter type is vertical {% endcomment %}
+        {%- if section.settings.enable_sorting and section.settings.filter_type == 'vertical' -%}
+            <facet-filters-form class="facets facets-vertical-sort page-width small-hide">
+                <form class="facets-vertical-form" id="FacetSortForm">
+                    <div class="facet-filters sorting caption">
+                        <div class="facet-filters__field">
+                            <h2 class="facet-filters__label caption-large text-body">
+                                <label for="SortBy">{{ 'products.facets.sort_by_label' | t }}</label>
+                            </h2>
+                            <div class="select">
+                                {%- assign sort_by = collection.sort_by | default: collection.default_sort_by -%}
+                                <select
+                                        name="sort_by"
+                                        class="facet-filters__sort select__select caption-large"
+                                        id="SortBy"
+                                        aria-describedby="a11y-refresh-page-message"
+                                >
+                                    {%- for option in collection.sort_options -%}
+                                        <option
+                                                value="{{ option.value | escape }}"
+                                                {% if option.value == sort_by %}
+                                                    selected="selected"
+                                                {% endif %}
+                                        >
+                                            {{ option.name | escape }}
+                                        </option>
+                                    {%- endfor -%}
+                                </select>
+                                {% render 'icon-caret' %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="product-count-vertical light" role="status">
+                        <h2 class="product-count__text text-body">
+              <span id="ProductCountDesktop">
+                {%- if collection.results_count -%}
+                    {{
+                    'templates.search.results_with_count'
+                    | t: terms: collection.terms, count: collection.results_count
+                    }}
+                {%- elsif collection.products_count == collection.all_products_count -%}
+                    {{ 'products.facets.product_count_simple' | t: count: collection.products_count }}
+                {%- else -%}
+                    {{
+                    'products.facets.product_count'
+                    | t: product_count: collection.products_count, count: collection.all_products_count
+                    }}
+                {%- endif -%}
+              </span>
+                        </h2>
+                        {%- render 'loading-spinner' -%}
+                    </div>
+                </form>
+            </facet-filters-form>
+        {%- endif -%}
+
+        <div class="{% if section.settings.filter_type == 'vertical' %} facets-vertical page-width{% endif %}">
+            {{ 'component-facets.css' | asset_url | stylesheet_tag }}
+            <script src="{{ 'facets.js' | asset_url }}" defer="defer"></script>
+            {%- if section.settings.enable_filtering or section.settings.enable_sorting -%}
+                <aside
+                        aria-labelledby="verticalTitle"
+                        class="facets-wrapper{% unless section.settings.enable_filtering %} facets-wrapper--no-filters{% endunless %}{% if section.settings.filter_type != 'vertical' %} page-width{% endif %}"
+                        id="main-collection-filters"
+                        data-id="{{ section.id }}"
+                >
+                    {% render 'facets',
+                            results: collection,
+                            enable_filtering: section.settings.enable_filtering,
+                            enable_sorting: section.settings.enable_sorting,
+                            filter_type: section.settings.filter_type,
+                            paginate: paginate
+                    %}
+                </aside>
+            {%- endif -%}
+
+            <div
+                    class="product-grid-container{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
+                    id="ProductGridContainer"
+                    {% if settings.animations_reveal_on_scroll %}
+                        data-cascade
+                    {% endif %}
+            >
+                {%- if collection.products.size == 0 -%}
+                    <div class="collection collection--empty page-width" id="product-grid" data-id="{{ section.id }}">
+                        <div class="loading-overlay gradient"></div>
+                        <div class="title-wrapper center">
+                            <h2 class="title title--primary">
+                                {{ 'sections.collection_template.empty' | t -}}
+                                <br>
+                                {{
+                                'sections.collection_template.use_fewer_filters_html'
+                                | t: link: collection.url, class: 'underlined-link link'
+                                }}
+                            </h2>
+                        </div>
+                    </div>
+                {%- else -%}
+                    <div
+                            class="collection{% if section.settings.filter_type != 'vertical' %} page-width{% endif %}"
+                    >
+                        <div class="loading-overlay gradient"></div>
+                        <ul
+                                id="product-grid"
+                                data-id="{{ section.id }}"
+                                class="
+                grid product-grid grid--{{ section.settings.columns_mobile }}-col-tablet-down
+                grid--{{ section.settings.columns_desktop }}-col-desktop
+                {% if section.settings.quick_add == 'bulk' %} collection-quick-add-bulk{% endif %}
+              "
+                        >
+                            {% assign skip_card_product_styles = false %}
+                            {%- for product in collection.products -%}
+                                {% assign lazy_load = false %}
+                                {%- if forloop.index > 2 -%}
+                                    {%- assign lazy_load = true -%}
+                                {%- endif -%}
+                                <li
+                                        class="grid__item{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
+                                        {% if settings.animations_reveal_on_scroll %}
+                                            data-cascade
+                                            style="--animation-order: {{ forloop.index }};"
+                                        {% endif %}
+                                >
+                                    {% render 'card-product',
+                                            card_product: product,
+                                            media_aspect_ratio: section.settings.image_ratio,
+                                            image_shape: section.settings.image_shape,
+                                            show_secondary_image: section.settings.show_secondary_image,
+                                            show_vendor: section.settings.show_vendor,
+                                            show_rating: section.settings.show_rating,
+                                            lazy_load: lazy_load,
+                                            skip_styles: skip_card_product_styles,
+                                            quick_add: section.settings.quick_add,
+                                            section_id: section.id
+                                    %}
+                                    <div onclick="openModalGreenleaze({{ product.variants.first.id }},{{ product.price }})" class="open-modal-collection" style="border: 1px solid grey; border-radius:5px;display: flex;font-size: 12px;align-items: center;justify-content: center;cursor:pointer">
+                                        <img src="{{ 'https://cdn.shopify.com/extensions/d6ff67d1-5ebe-428f-ba0e-42ab96cf5a13/greenleaze-6/assets/greenlease.png' }}" alt="greenlease logo" width="80" height="30"> <span class="product-{{ product.id }}-price"></span> / mois avec GreenLeaze
+                                        <form method="post" action="/cart/add" id="add-to-cart-form-{{ product.variants.first.id }}" style="display:none">
+                                            <input type="hidden" name="id" value="{{ product.variants.first.id }}" />
+                                            <input min="1" type="hidden" id="quantity" name="quantity" value="1"/>
+                                        </form>
+                                    </div>
+                                </li>
+                                {%- assign skip_card_product_styles = true -%}
+                            {%- endfor -%}
+                        </ul>
+
+                        {%- if paginate.pages > 1 -%}
+                            {% render 'pagination', paginate: paginate, anchor: '' %}
+                        {%- endif -%}
+                    </div>
+                {%- endif -%}
+            </div>
+        </div>
+    {%- endpaginate -%}
+    {% if section.settings.image_shape == 'arch' %}
+        {% render 'mask-arch' %}
+    {%- endif -%}
+</div>
+
+<div class="modalGreenleazeCollection" style="z-index:99999999">
+    <div class="modal-content">
+        <div onclick="closeModalGreenleazeCollection()" class="close">&times;</div>
+        <div class="modalContainer" style="display: flex;gap: 30px;padding: 40px;">
+            <div class="left">
+                <h3 class="title-modal">La consommation circulaire avec GreenLeaze</h3>
+                <div class="text-modal">
+                    <img src="https://cdn.shopify.com/extensions/d6ff67d1-5ebe-428f-ba0e-42ab96cf5a13/greenleaze-6/assets/number.png" alt="Number Image" width="100"  height="100%" style="margin-right: 20px">
+                    <div>
+                        <div style="margin-bottom: 30px;font-size:14px;">Choisissez la durée de votre abonnement</div>
+                        <div style="margin-bottom: 30px;font-size:14px;">Payez le 1er mois et validez votre abonnement en 3 clics</div>
+                        <div style="font-size:14px;">Profitez de la garantie incluse et de la flexibilité de votre abonnement !</div>
+                    </div>
+                </div>
+                <div>
+                    <img src="https://cdn.shopify.com/extensions/d6ff67d1-5ebe-428f-ba0e-42ab96cf5a13/greenleaze-6/assets/greenlease.png" alt="greenlease logo" width="300" height="100">
+                </div>
+            </div>
+            <div class="right">
+                <div class="slider-container">
+                    <input type="range" id="monthSliderCollection" min="0" max="3" step="1" value="0">
+                    <div class="slider-labels">
+                        <span>12 mois</span>
+                        <span>18 mois</span>
+                        <span>24 mois</span>
+                        <span>36 mois</span>
+                    </div>
+
+                </div>
+                <div class="abo-title">
+                    Votre abonnement test
+                </div>
+                <div class="table">
+                    <div style="text-align: left">
+                        <span>Paiement mensuel</span>
+                        <span id="paiementMensuelCollection"></span>
+                    </div>
+                    <div style="text-align: left">
+                        <span>Apport initial</span>
+                        <span id="apportInitialCollection"></span>
+                    </div>
+                    <hr style="margin-top: 20px;margin-bottom:20px;">
+                    <div style="text-align: left">
+                        <span>A payer aujourd'hui</span>
+                        <span id="paidTodayCollection"></span>
+                    </div>
+                </div>
+                <div style="margin:auto;text-align:center">
+                    <button class="buttonOrderCollection" onclick="orderCollection()">Commander</button>
+                </div>
+            </div>
+        </div>
+        <input id="priceSelected" type="hidden" value="">
+    </div>
+
+</div>
+
+
+<script type="text/javascript">
+
+	async function updateMonthlyPayment(rule) {
+		console.log("update monthly paymetn");
+		// get delivery
+		const shopDomain = "{{ shop.domain }}";
+		const fraisLivraisonResponse = await fetch("/apps/greenlease-proxy/api/get-frais-livraison", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+				'Access-Control-Allow-Origin': '*',
+			},
+			body: JSON.stringify({
+				"shop": shopDomain
+			}),
+		});
+		const fraisLivraisonData = await fraisLivraisonResponse.json();
+		fraisLivraison = fraisLivraisonData.deliveryFee;
+
+		if(document.getElementById('priceSelected')){
+			try {
+
+				// Get the price of the first item in the cart (assuming it's prixHT)
+				const prixHT = (document.getElementById('priceSelected').value  / 100);
+				const tva = 120 / 100;
+				const duration = 24;
+				const calculatePayment = parseRule(rule, {tva, prixHT, duration});
+				const paiementMensuel = calculatePayment();
+
+				console.log("Calculated payment per month:", paiementMensuel);
+
+				document.getElementById('paiementMensuel').innerText = paiementMensuel.toFixed(2) + ' €';
+				document.getElementById('apportInitial').innerText = (paiementMensuel + fraisLivraison).toFixed(2) + ' €';
+				document.getElementById('paidToday').innerText = paiementMensuel.toFixed(2) + ' €';
+
+			} catch (error) {
+				console.error('Failed to fetch cart contents or update payment:', error);
+			}
+		}
+
+	}
+
+	async function orderCollection() {
+
+		var cartContentsRes = await fetch(window.Shopify.routes.root + 'cart.js');
+		const cartContents = await cartContentsRes.json();
+		console.log('cartcontents');
+		console.log(cartContents);
+		if (cartContents.items.length === 0) {
+			alert("Veuillez ajouter le produit au panier");
+			return; // Exit the function if the cart is empty
+		}
+		const shopDomain = "{{ shop.domain }}";
+		fetch("/apps/greenlease-proxy/api/send", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+				'Access-Control-Allow-Origin': '*',
+			},
+			body: JSON.stringify({
+				"cartContents": JSON.stringify(cartContents),
+				"shop": shopDomain
+			}),
+		})  // Adjust this URL based on your server setup
+			.then(response => response.json())
+			.then(data => {
+				console.log('send', data);
+				window.location.href = data.redirectUrl;
+
+			})
+			.catch(error => console.error('Error fetching pricing data:', error));
+	}
+
+
+	document.addEventListener('DOMContentLoaded', function () {
+		const slider = document.getElementById('monthSliderCollection');
+		if (slider) {
+			slider.addEventListener('input', async function () {
+				console.log('update slider');
+
+				const monthValues = [12, 18, 24, 36];
+				const selectedMonth = monthValues[slider.value];
+
+				try {
+					const response = await fetch("/apps/greenlease-proxy/api/pricing", {
+						method: "GET",
+						headers: {
+							"Content-Type": "application/json",
+							'Access-Control-Allow-Origin': '*',
+						},
+					});
+					const data = await response.json();
+					console.log('Pricing data:', data);
+					const priceRules = data['hydra:member'];
+					const minPricesByDuration = {};
+
+					// Aggregate the minimum prices for each duration
+					priceRules.forEach(priceRule => {
+						const duration = priceRule.duration;
+						const minPrice = parseFloat(priceRule.minPrice);
+						if (!minPricesByDuration[duration] || minPrice < minPricesByDuration[duration].minPrice) {
+							minPricesByDuration[duration] = {
+								minPrice: priceRule.maxPrice,
+								perMonthPrice: (minPrice / duration).toFixed(2),
+								rule: priceRule.rule
+							};
+						}
+					});
+
+					// Assuming collection.products is available in the context
+					const products = {{ collection.products | json }};
+					products.forEach(product => {
+						const productId = product.id;
+						const prixHT = parseFloat(product.price) / 100;
+						const tva = 120 / 100;
+						const rule = minPricesByDuration[selectedMonth].rule;
+						const calculatePayment = parseRule(rule, { tva, prixHT, duration: selectedMonth });
+						const paiementMensuel = calculatePayment();
+						document.getElementById('paiementMensuelCollection').innerText = `${paiementMensuel.toFixed(2)} €`;
+						document.getElementById('apportInitialCollection').innerText = (paiementMensuel + fraisLivraison).toFixed(2) + ' €';
+						document.getElementById('paidTodayCollection').innerText = paiementMensuel.toFixed(2) + ' €';
+
+					});
+
+				} catch (error) {
+					console.error('Error fetching pricing data:', error);
+				}
+			});
+		}
+	});
+
+
+	function parseRule(rule, values) {
+		return new Function('return ' + rule.replace(/\[\[(\w+)\]\]/g, (_, key) => values[key]));
+	}
+
+	async function getPriceForAllProducts() {
+		try {
+			const response = await fetch('/apps/greenlease-proxy/api/pricing', {
+				method: 'GET',
+				headers: {
+					'Content-Type': 'application/json',
+					'Access-Control-Allow-Origin': '*',
+				},
+			});
+			const data = await response.json();
+			const priceRules = data['hydra:member'];
+			const minPricesByDuration = {};
+
+			priceRules.forEach(priceRule => {
+				const duration = priceRule.duration;
+				const minPrice = parseFloat(priceRule.minPrice);
+				if (!minPricesByDuration[duration] || minPrice < minPricesByDuration[duration].minPrice) {
+					minPricesByDuration[duration] = {
+						minPrice: priceRule.maxPrice,
+						perMonthPrice: (minPrice / duration).toFixed(2),
+						rule: priceRule.rule
+					};
+				}
+			});
+
+			// Assuming collection.products is available in the context
+			const products = {{ collection.products | json }};
+			products.forEach(product => {
+				const productId = product.id;
+				const prixHT = parseFloat(product.price) / 100;
+				const tva = 120 / 100;
+				const duration = 36; // Assuming 36 months for this example
+				const rule = minPricesByDuration[duration].rule;
+				const calculatePayment = parseRule(rule, { tva, prixHT, duration });
+				const paiementMensuel = calculatePayment();
+				document.querySelector(`.product-${productId}-price`).innerText = `${paiementMensuel.toFixed(2)} €`;
+			});
+
+
+		} catch (error) {
+			console.error('Failed to fetch product prices or update payment:', error);
+		}
+	}
+
+	getPriceForAllProducts();
+
+	function closeModalGreenleazeCollection() {
+		var modal = document.querySelector('.modalGreenleazeCollection');
+		// Check if the click was outside the modal content
+		if (modal) {
+			modal.style.display = 'none';
+		}
+	}
+
+	async function openModalGreenleaze(productId, productPrice) {
+		const throwAwayArray = [{ id: productId, quantity: 1 }];
+		const jsonToSend = { items: throwAwayArray };
+		const myJSON = JSON.stringify(jsonToSend);
+
+		fetch('/cart/add.js', {
+			method: 'POST',
+			body: myJSON,
+			headers: {
+				'Content-Type': 'application/json',
+			}
+		})
+			.then(response => response.json())
+			.then(data => {
+				console.log('Product added to cart:', data);
+			})
+			.catch(error => {
+				console.error('Error adding product to cart:', error);
+			});
+
+		const button = document.getElementById('btn-greenlease');
+		console.log('open modal');
+		const modal = document.querySelector('.modalGreenleazeCollection');
+		document.getElementById('monthSliderCollection').value = 4;
+		modal.style.display = 'block';
+		document.body.appendChild(modal);
+		const shopDomain = "{{ shop.domain }}";
+		const fraisLivraisonResponse = await fetch("/apps/greenlease-proxy/api/get-frais-livraison", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+				'Access-Control-Allow-Origin': '*',
+			},
+			body: JSON.stringify({
+				"shop": shopDomain
+			}),
+		});
+		const fraisLivraisonData = await fraisLivraisonResponse.json();
+		fraisLivraison = fraisLivraisonData.deliveryFee;
+
+		console.log(fraisLivraison);
+
+		const response = await fetch('/apps/greenlease-proxy/api/pricing', {
+			method: 'GET',
+			headers: {
+				'Content-Type': 'application/json',
+				'Access-Control-Allow-Origin': '*',
+			},
+		});
+		const data = await response.json();
+		const priceRules = data['hydra:member'];
+		const minPricesByDuration = {};
+
+		priceRules.forEach(priceRule => {
+			const duration = priceRule.duration;
+			const minPrice = parseFloat(priceRule.minPrice);
+			if (!minPricesByDuration[duration] || minPrice < minPricesByDuration[duration].minPrice) {
+				minPricesByDuration[duration] = {
+					minPrice: priceRule.maxPrice,
+					perMonthPrice: (minPrice / duration).toFixed(2),
+					rule: priceRule.rule
+				};
+			}
+		});
+
+		const prixHT = parseFloat(productPrice) / 100;
+		const tva = 120 / 100;
+		const duration = 36;
+		const rule = minPricesByDuration[duration].rule;
+		const calculatePayment = parseRule(rule, { tva, prixHT, duration });
+		const paiementMensuel = calculatePayment();
+		document.getElementById('priceSelected').value = prixHT;
+		document.getElementById('paiementMensuelCollection').innerText = `${paiementMensuel.toFixed(2)} €`;
+		document.getElementById('apportInitialCollection').innerText = (paiementMensuel + fraisLivraison).toFixed(2) + ' €';
+		document.getElementById('paidTodayCollection').innerText = paiementMensuel.toFixed(2) + ' €';
+
+
+
+
+	}
+
+
+
+
+</script>
+<style>
+    .left {
+        width: 50%;
+    }
+
+    .right {
+        width: 50%;
+    }
+
+    .modalGreenleazeCollection .buttonOrderCollection {
+        border-radius: 20px;
+        background: #0D5537;
+        font-size: 18px;
+        letter-spacing: 2px;
+        color: white;
+        border: 0;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        padding-left: 20px;
+        padding-right: 20px;
+        margin-top: 40px;
+        cursor: pointer;
+        font-family: Baloo, serif;
+        font-style: normal;
+        font-weight: 400;
+        line-height: normal;
+    }
+
+    .modalGreenleazeCollection  .buttonOrder {
+        border-radius: 20px;
+        background: #0D5537;
+        font-size: 18px;
+        letter-spacing: 2px;
+        color: white;
+        border: 0;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        padding-left: 20px;
+        padding-right: 20px;
+        margin-top: 40px;
+        cursor: pointer;
+        font-family: Baloo, serif;
+        font-style: normal;
+        font-weight: 400;
+        line-height: normal;
+    }
+
+    .modalGreenleazeCollection {
+        display: none; /* Hidden by default */
+        position: fixed; /* Stay in place */
+        z-index: 1; /* Sit on top */
+        left: 0;
+        top: 0;
+        width: 100%; /* Full width */
+        height: 100%; /* Full height */
+        overflow: auto; /* Enable scroll if needed */
+        background-color: rgb(0, 0, 0); /* Fallback color */
+        background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
+    }
+
+    .modalGreenleazeCollection .modal-content {
+        background-color: #fff; /* White background */
+        margin: 10% auto; /* 10% from the top and centered */
+        padding: 20px; /* Padding inside the modal box */
+        border: 1px solid #888; /* Gray border */
+        width: 80%; /* Adjust based on screen size */
+        max-width: 800px; /* Maximum width set to 500px */
+        border-radius: 20px;
+        padding: 20px;
+    }
+
+    .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+    }
+
+    .close:hover,
+    .close:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+
+
+    .open-modal-cart {
+        padding: 15px;
+        background: grey;
+        border-radius: 5px;
+        cursor: pointer;
+
+        margin-bottom: 20px;
+        width: 100%;
+        border: 0;
+        color: white;
+        text-align: center;
+    }
+
+    .open-modal-cart:hover {
+        background: rgba(214, 248, 137, 1);
+    }
+
+    .slider-container {
+        width: 300px; /* Match or exceed the width of the slider */
+        text-align: center; /* Center the slider within the container */
+    }
+
+    .modalGreenleazeCollection  #monthSliderCollection {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 100%;
+        height: 15px;
+        background: transparent;
+        border: 3px solid #0D5537;
+        border-radius: 20px;
+        outline: none;
+        transition: opacity .2s;
+    }
+
+    .modalGreenleazeCollection  #monthSliderCollection:hover {
+        opacity: 1;
+    }
+
+    .modalGreenleazeCollection  #monthSliderCollection::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 25px;
+        height: 25px;
+        background: #0D5537 url('data:image/svg+xml, <svg xmlns="http://www.w3.org/2000/svg" width="24" height="14" viewBox="0 0 24 14" fill="none"> <path d="M14.1272 0.120301C13.9003 0.138719 13.795 0.184763 13.717 0.29711C13.6425 0.409456 13.6335 0.519961 13.6952 0.624941C13.7569 0.731762 13.8858 0.844109 13.9765 0.873577C14.0999 0.910412 14.3994 0.928829 14.8768 0.930671C15.3868 0.930671 15.7117 0.952772 15.8225 0.995132C15.8932 1.02276 15.9041 1.03749 15.9804 1.19588C16.0802 1.404 16.3016 1.96758 16.3143 2.04677L16.3234 2.10387L16.1637 2.11676C15.7753 2.14623 14.06 2.16464 11.4989 2.16464H8.74003L8.58212 1.83681C8.49499 1.65816 8.42421 1.50161 8.42421 1.49056C8.42421 1.46294 8.53856 1.44084 9.15931 1.35612C9.86719 1.25666 10.0832 1.21062 10.2701 1.12221C10.4444 1.03749 10.4807 0.93988 10.3809 0.829375C10.2647 0.704136 10.0269 0.680193 8.72369 0.663617C7.83431 0.650725 7.22081 0.669143 7.09012 0.713345C6.98667 0.748338 6.9667 0.818324 6.97759 1.12405C6.99211 1.55871 7.03386 1.59186 7.48581 1.53108C7.64554 1.51082 7.6655 1.51082 7.67821 1.53661C7.68728 1.55318 7.80163 1.77235 7.93232 2.02283C8.15376 2.44643 8.17009 2.48327 8.1465 2.5201C7.67821 3.26233 6.58372 4.94568 6.5692 4.94568C6.56012 4.94568 6.42762 4.91253 6.27697 4.87201C5.71974 4.72468 5.31317 4.66942 4.78679 4.66942C4.15696 4.66942 3.50717 4.79098 3.10785 4.98252C2.52158 5.26615 1.77921 5.83525 1.46702 6.23859C1.03685 6.79848 0.748252 7.45415 0.597601 8.21479C0.550409 8.45053 0.532258 9.06936 0.563115 9.34931C0.695615 10.5078 1.29822 11.5944 2.21665 12.3237C2.66679 12.6829 3.26576 12.9665 3.98635 13.1617C4.25498 13.2354 5.14618 13.228 5.59632 13.1507C5.80505 13.1138 6.07731 13.031 6.35502 12.9186C6.76341 12.751 7.05019 12.5816 7.35331 12.3256C7.54752 12.1617 8.03759 11.6589 8.22999 11.4286C8.6638 10.9056 8.92335 10.3125 9.01955 9.62925C9.04859 9.41745 9.05222 9.40456 9.09578 9.39351C9.12119 9.38614 9.72924 9.37693 10.4498 9.37141L11.7585 9.3622L11.7694 9.77107C11.7821 10.2812 11.7658 10.9719 11.7403 10.9903C11.7295 10.9977 11.6841 10.9977 11.6387 10.9921C11.5225 10.9793 11.2231 11.0161 11.1722 11.0511C11.1359 11.075 11.1287 11.0953 11.1287 11.1726C11.1287 11.25 11.1377 11.2739 11.1795 11.3181C11.2521 11.39 11.3973 11.4176 11.6369 11.4047C11.822 11.3936 12.1433 11.3458 12.1633 11.3255C12.1687 11.32 12.176 10.8706 12.1814 10.3254L12.1905 9.33642L12.6461 8.75811C12.8966 8.43948 13.6589 7.46151 14.3414 6.58484C15.8515 4.64732 16.3325 4.03954 16.7518 3.54595L16.8062 3.48149L16.857 3.52754C16.9387 3.60305 17.2328 4.25871 17.3653 4.66206C17.3979 4.76335 17.4361 4.90885 17.4469 4.9862C17.4742 5.17774 17.4578 5.2109 17.2763 5.30667C16.946 5.48163 16.3906 6.03968 15.9931 6.59589C15.5974 7.14842 15.2652 8.20926 15.267 8.91281C15.2689 9.79133 15.8315 11.2058 16.4341 11.8449C17.1039 12.5576 18.0042 13.0402 18.9516 13.1894C19.2421 13.2354 19.841 13.2354 20.1314 13.1912C20.7449 13.0936 21.3367 12.8634 21.8612 12.5171C22.1262 12.3403 22.2642 12.2243 22.5019 11.9775C22.7161 11.7546 22.8359 11.6147 22.963 11.4379C23.3659 10.8816 23.6218 10.3107 23.7053 9.79685C23.8142 9.11356 23.7961 8.21479 23.6618 7.78566C23.5529 7.43389 23.3169 6.93846 23.1027 6.60878C22.7579 6.07836 22.2587 5.57925 21.7596 5.26431C21.3911 5.03409 20.9264 4.83702 20.5271 4.74493C20.0915 4.64364 19.8301 4.6289 19.0206 4.66021C18.6576 4.67495 18.3363 4.68784 18.3055 4.68784C18.2492 4.68784 18.2474 4.68416 18.1621 4.4613C18.1149 4.33791 17.8826 3.74671 17.6448 3.14998C16.7826 0.98224 16.5321 0.396564 16.4069 0.240015C16.3071 0.116618 16.2817 0.114777 15.2398 0.109251C14.7316 0.107409 14.2288 0.112934 14.1272 0.120301ZM15.552 3.02842C15.7916 3.04868 15.9205 3.07631 15.9205 3.10578C15.9205 3.17945 15.2035 4.15926 14.4557 5.10592C14.296 5.30667 14.0328 5.64371 13.8694 5.85735C13.6026 6.2036 12.2812 7.84644 12.1977 7.93853C12.1633 7.97352 12.1633 7.96063 12.1633 7.43573V6.89794H12.2685C12.5154 6.89794 12.7223 6.82795 12.7731 6.7285C12.833 6.61063 12.7677 6.50012 12.6098 6.45224C12.5372 6.43013 11.8075 6.42461 11.7857 6.44487C11.7821 6.45039 11.7875 6.7948 11.7984 7.21288C11.8111 7.62911 11.8184 7.97352 11.8148 7.9772C11.8093 7.98273 10.8328 6.05073 9.58222 3.55885L9.29544 2.98975L12.3139 2.99896C14.1744 3.00448 15.4159 3.01553 15.552 3.02842ZM8.73095 3.84432C8.83804 4.01744 10.0178 6.12809 10.5515 7.10053C10.9599 7.8446 11.2539 8.42659 11.2231 8.42659C11.0778 8.43212 9.86719 8.42291 9.51144 8.41554L9.03044 8.40265L8.99051 8.23321C8.78541 7.35653 8.26448 6.45224 7.43862 5.54057L7.31701 5.40612L7.51304 5.08013C7.62194 4.89964 7.87968 4.46683 8.08842 4.11874L8.46777 3.48518L8.54037 3.5699C8.58212 3.61594 8.66743 3.73934 8.73095 3.84432ZM19.8755 5.50742C20.0988 5.52215 20.3638 5.55162 20.4654 5.57372C20.6923 5.61976 20.9736 5.73211 21.1878 5.86103C21.6543 6.14098 22.2587 6.74507 22.5455 7.22024C22.6544 7.39705 22.8613 7.84091 22.9067 7.9901C22.9684 8.19821 22.9974 8.41554 23.0192 8.85204C23.0465 9.43219 23.012 9.67161 22.8432 10.075C22.6798 10.4672 22.4729 10.7822 22.0663 11.2592C21.618 11.7841 20.921 12.1838 20.1823 12.3403C19.9027 12.4011 19.4381 12.4213 19.1513 12.3882C18.7792 12.344 18.3872 12.2206 18.0241 12.0346C17.0658 11.541 16.3924 10.6625 16.1728 9.61268C16.1346 9.43771 16.1292 9.36036 16.1292 9.00674C16.1292 8.59051 16.1346 8.5463 16.2218 8.14112C16.2835 7.86117 16.3615 7.62359 16.4741 7.38416C16.6374 7.03239 16.8062 6.80585 17.1983 6.40988C17.4869 6.11888 17.5776 6.04521 17.7011 6.00285C17.7682 5.97891 17.7827 5.97891 17.8408 6.00837C17.9425 6.0581 17.9951 6.15387 18.1784 6.61247C18.271 6.84637 18.4507 7.28471 18.5759 7.58859C18.6993 7.89248 18.8482 8.25715 18.9063 8.39896C19.144 8.98648 19.3437 9.30511 19.4925 9.33457C19.6033 9.35667 19.7485 9.26827 19.7993 9.14856C19.9027 8.90176 19.8483 8.6034 19.5996 8.03982C19.4272 7.64385 19.3836 7.54071 19.2094 7.08211C18.9535 6.40435 18.6975 5.66397 18.6975 5.59582C18.6975 5.56267 18.7756 5.51479 18.8754 5.48532C18.9734 5.45769 19.2402 5.46322 19.8755 5.50742ZM5.39121 5.65476C5.60358 5.68607 5.90125 5.75421 6.07913 5.81315L6.19348 5.85183L6.1354 5.95496C6.05009 6.10967 5.66711 6.71561 5.20971 7.42284C4.52905 8.47079 4.31851 8.83546 4.26768 9.05094C4.24772 9.13935 4.24772 9.15224 4.28039 9.19644C4.33303 9.26827 4.44193 9.32352 4.57625 9.34562C4.65248 9.35852 5.30409 9.36588 6.44396 9.36588H8.19369L8.18099 9.49849C8.16283 9.70476 8.09931 9.98287 8.02307 10.202C7.82342 10.7675 7.45677 11.2353 6.93584 11.5815C6.4494 11.9038 5.73426 12.1396 5.04817 12.204C3.81936 12.3164 2.62867 11.7417 1.9698 10.7196C1.43617 9.88894 1.28007 8.71206 1.58137 7.79671C1.79555 7.14842 2.27655 6.54616 2.88823 6.1594C3.36196 5.86103 3.92826 5.6787 4.55809 5.61976C4.70512 5.60687 5.19337 5.62713 5.39121 5.65476ZM7.44588 6.74139C7.71814 7.05633 7.88876 7.34733 8.00492 7.6991C8.05756 7.86302 8.11927 8.1448 8.14105 8.32714L8.15194 8.42107L7.41321 8.43396C7.00482 8.43948 6.41492 8.45053 6.10091 8.45606L5.53098 8.46895L5.5582 8.42475C5.57272 8.40081 5.88673 7.89433 6.25519 7.29944L6.92314 6.21833L7.10828 6.3933C7.20992 6.48907 7.36057 6.64562 7.44588 6.74139Z" fill="white"/> </svg> ') no-repeat center;
+        cursor: pointer;
+        border-radius: 50%;
+        background-size: 60%;
+        color: white;
+        font-size: 16px;
+        text-align: center;
+        line-height: 25px;
+    }
+
+    .modalGreenleazeCollection  #monthSliderCollection::-moz-range-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 25px;
+        height: 25px;
+        background: #0D5537 url('data:image/svg+xml, <svg xmlns="http://www.w3.org/2000/svg" width="24" height="14" viewBox="0 0 24 14" fill="none"> <path d="M14.1272 0.120301C13.9003 0.138719 13.795 0.184763 13.717 0.29711C13.6425 0.409456 13.6335 0.519961 13.6952 0.624941C13.7569 0.731762 13.8858 0.844109 13.9765 0.873577C14.0999 0.910412 14.3994 0.928829 14.8768 0.930671C15.3868 0.930671 15.7117 0.952772 15.8225 0.995132C15.8932 1.02276 15.9041 1.03749 15.9804 1.19588C16.0802 1.404 16.3016 1.96758 16.3143 2.04677L16.3234 2.10387L16.1637 2.11676C15.7753 2.14623 14.06 2.16464 11.4989 2.16464H8.74003L8.58212 1.83681C8.49499 1.65816 8.42421 1.50161 8.42421 1.49056C8.42421 1.46294 8.53856 1.44084 9.15931 1.35612C9.86719 1.25666 10.0832 1.21062 10.2701 1.12221C10.4444 1.03749 10.4807 0.93988 10.3809 0.829375C10.2647 0.704136 10.0269 0.680193 8.72369 0.663617C7.83431 0.650725 7.22081 0.669143 7.09012 0.713345C6.98667 0.748338 6.9667 0.818324 6.97759 1.12405C6.99211 1.55871 7.03386 1.59186 7.48581 1.53108C7.64554 1.51082 7.6655 1.51082 7.67821 1.53661C7.68728 1.55318 7.80163 1.77235 7.93232 2.02283C8.15376 2.44643 8.17009 2.48327 8.1465 2.5201C7.67821 3.26233 6.58372 4.94568 6.5692 4.94568C6.56012 4.94568 6.42762 4.91253 6.27697 4.87201C5.71974 4.72468 5.31317 4.66942 4.78679 4.66942C4.15696 4.66942 3.50717 4.79098 3.10785 4.98252C2.52158 5.26615 1.77921 5.83525 1.46702 6.23859C1.03685 6.79848 0.748252 7.45415 0.597601 8.21479C0.550409 8.45053 0.532258 9.06936 0.563115 9.34931C0.695615 10.5078 1.29822 11.5944 2.21665 12.3237C2.66679 12.6829 3.26576 12.9665 3.98635 13.1617C4.25498 13.2354 5.14618 13.228 5.59632 13.1507C5.80505 13.1138 6.07731 13.031 6.35502 12.9186C6.76341 12.751 7.05019 12.5816 7.35331 12.3256C7.54752 12.1617 8.03759 11.6589 8.22999 11.4286C8.6638 10.9056 8.92335 10.3125 9.01955 9.62925C9.04859 9.41745 9.05222 9.40456 9.09578 9.39351C9.12119 9.38614 9.72924 9.37693 10.4498 9.37141L11.7585 9.3622L11.7694 9.77107C11.7821 10.2812 11.7658 10.9719 11.7403 10.9903C11.7295 10.9977 11.6841 10.9977 11.6387 10.9921C11.5225 10.9793 11.2231 11.0161 11.1722 11.0511C11.1359 11.075 11.1287 11.0953 11.1287 11.1726C11.1287 11.25 11.1377 11.2739 11.1795 11.3181C11.2521 11.39 11.3973 11.4176 11.6369 11.4047C11.822 11.3936 12.1433 11.3458 12.1633 11.3255C12.1687 11.32 12.176 10.8706 12.1814 10.3254L12.1905 9.33642L12.6461 8.75811C12.8966 8.43948 13.6589 7.46151 14.3414 6.58484C15.8515 4.64732 16.3325 4.03954 16.7518 3.54595L16.8062 3.48149L16.857 3.52754C16.9387 3.60305 17.2328 4.25871 17.3653 4.66206C17.3979 4.76335 17.4361 4.90885 17.4469 4.9862C17.4742 5.17774 17.4578 5.2109 17.2763 5.30667C16.946 5.48163 16.3906 6.03968 15.9931 6.59589C15.5974 7.14842 15.2652 8.20926 15.267 8.91281C15.2689 9.79133 15.8315 11.2058 16.4341 11.8449C17.1039 12.5576 18.0042 13.0402 18.9516 13.1894C19.2421 13.2354 19.841 13.2354 20.1314 13.1912C20.7449 13.0936 21.3367 12.8634 21.8612 12.5171C22.1262 12.3403 22.2642 12.2243 22.5019 11.9775C22.7161 11.7546 22.8359 11.6147 22.963 11.4379C23.3659 10.8816 23.6218 10.3107 23.7053 9.79685C23.8142 9.11356 23.7961 8.21479 23.6618 7.78566C23.5529 7.43389 23.3169 6.93846 23.1027 6.60878C22.7579 6.07836 22.2587 5.57925 21.7596 5.26431C21.3911 5.03409 20.9264 4.83702 20.5271 4.74493C20.0915 4.64364 19.8301 4.6289 19.0206 4.66021C18.6576 4.67495 18.3363 4.68784 18.3055 4.68784C18.2492 4.68784 18.2474 4.68416 18.1621 4.4613C18.1149 4.33791 17.8826 3.74671 17.6448 3.14998C16.7826 0.98224 16.5321 0.396564 16.4069 0.240015C16.3071 0.116618 16.2817 0.114777 15.2398 0.109251C14.7316 0.107409 14.2288 0.112934 14.1272 0.120301ZM15.552 3.02842C15.7916 3.04868 15.9205 3.07631 15.9205 3.10578C15.9205 3.17945 15.2035 4.15926 14.4557 5.10592C14.296 5.30667 14.0328 5.64371 13.8694 5.85735C13.6026 6.2036 12.2812 7.84644 12.1977 7.93853C12.1633 7.97352 12.1633 7.96063 12.1633 7.43573V6.89794H12.2685C12.5154 6.89794 12.7223 6.82795 12.7731 6.7285C12.833 6.61063 12.7677 6.50012 12.6098 6.45224C12.5372 6.43013 11.8075 6.42461 11.7857 6.44487C11.7821 6.45039 11.7875 6.7948 11.7984 7.21288C11.8111 7.62911 11.8184 7.97352 11.8148 7.9772C11.8093 7.98273 10.8328 6.05073 9.58222 3.55885L9.29544 2.98975L12.3139 2.99896C14.1744 3.00448 15.4159 3.01553 15.552 3.02842ZM8.73095 3.84432C8.83804 4.01744 10.0178 6.12809 10.5515 7.10053C10.9599 7.8446 11.2539 8.42659 11.2231 8.42659C11.0778 8.43212 9.86719 8.42291 9.51144 8.41554L9.03044 8.40265L8.99051 8.23321C8.78541 7.35653 8.26448 6.45224 7.43862 5.54057L7.31701 5.40612L7.51304 5.08013C7.62194 4.89964 7.87968 4.46683 8.08842 4.11874L8.46777 3.48518L8.54037 3.5699C8.58212 3.61594 8.66743 3.73934 8.73095 3.84432ZM19.8755 5.50742C20.0988 5.52215 20.3638 5.55162 20.4654 5.57372C20.6923 5.61976 20.9736 5.73211 21.1878 5.86103C21.6543 6.14098 22.2587 6.74507 22.5455 7.22024C22.6544 7.39705 22.8613 7.84091 22.9067 7.9901C22.9684 8.19821 22.9974 8.41554 23.0192 8.85204C23.0465 9.43219 23.012 9.67161 22.8432 10.075C22.6798 10.4672 22.4729 10.7822 22.0663 11.2592C21.618 11.7841 20.921 12.1838 20.1823 12.3403C19.9027 12.4011 19.4381 12.4213 19.1513 12.3882C18.7792 12.344 18.3872 12.2206 18.0241 12.0346C17.0658 11.541 16.3924 10.6625 16.1728 9.61268C16.1346 9.43771 16.1292 9.36036 16.1292 9.00674C16.1292 8.59051 16.1346 8.5463 16.2218 8.14112C16.2835 7.86117 16.3615 7.62359 16.4741 7.38416C16.6374 7.03239 16.8062 6.80585 17.1983 6.40988C17.4869 6.11888 17.5776 6.04521 17.7011 6.00285C17.7682 5.97891 17.7827 5.97891 17.8408 6.00837C17.9425 6.0581 17.9951 6.15387 18.1784 6.61247C18.271 6.84637 18.4507 7.28471 18.5759 7.58859C18.6993 7.89248 18.8482 8.25715 18.9063 8.39896C19.144 8.98648 19.3437 9.30511 19.4925 9.33457C19.6033 9.35667 19.7485 9.26827 19.7993 9.14856C19.9027 8.90176 19.8483 8.6034 19.5996 8.03982C19.4272 7.64385 19.3836 7.54071 19.2094 7.08211C18.9535 6.40435 18.6975 5.66397 18.6975 5.59582C18.6975 5.56267 18.7756 5.51479 18.8754 5.48532C18.9734 5.45769 19.2402 5.46322 19.8755 5.50742ZM5.39121 5.65476C5.60358 5.68607 5.90125 5.75421 6.07913 5.81315L6.19348 5.85183L6.1354 5.95496C6.05009 6.10967 5.66711 6.71561 5.20971 7.42284C4.52905 8.47079 4.31851 8.83546 4.26768 9.05094C4.24772 9.13935 4.24772 9.15224 4.28039 9.19644C4.33303 9.26827 4.44193 9.32352 4.57625 9.34562C4.65248 9.35852 5.30409 9.36588 6.44396 9.36588H8.19369L8.18099 9.49849C8.16283 9.70476 8.09931 9.98287 8.02307 10.202C7.82342 10.7675 7.45677 11.2353 6.93584 11.5815C6.4494 11.9038 5.73426 12.1396 5.04817 12.204C3.81936 12.3164 2.62867 11.7417 1.9698 10.7196C1.43617 9.88894 1.28007 8.71206 1.58137 7.79671C1.79555 7.14842 2.27655 6.54616 2.88823 6.1594C3.36196 5.86103 3.92826 5.6787 4.55809 5.61976C4.70512 5.60687 5.19337 5.62713 5.39121 5.65476ZM7.44588 6.74139C7.71814 7.05633 7.88876 7.34733 8.00492 7.6991C8.05756 7.86302 8.11927 8.1448 8.14105 8.32714L8.15194 8.42107L7.41321 8.43396C7.00482 8.43948 6.41492 8.45053 6.10091 8.45606L5.53098 8.46895L5.5582 8.42475C5.57272 8.40081 5.88673 7.89433 6.25519 7.29944L6.92314 6.21833L7.10828 6.3933C7.20992 6.48907 7.36057 6.64562 7.44588 6.74139Z" fill="white"/> </svg>') no-repeat center;
+        cursor: pointer;
+        border-radius: 50%;
+        background-size: 60%;
+        color: white;
+        font-size: 16px;
+        text-align: center;
+        line-height: 25px;
+    }
+
+    .modalGreenleazeCollection  #sliderValue {
+        margin-top: 20px;
+        font-size: 20px;
+        color: #333;
+    }
+
+    .modalGreenleazeCollection  .slider-labels {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 0;
+    }
+
+    .modalGreenleazeCollection  .slider-labels span {
+        color: #000;
+        font-family: Baloo;
+        font-size: 13px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: normal;
+
+    }
+
+    .modalGreenleazeCollection  .text-modal {
+        display: flex;
+    }
+
+    .modalGreenleazeCollection  .abo-title {
+        font-family: Baloo;
+        font-size: 23px;
+        font-weight: 400;
+        line-height: 36.2px;
+        text-align: center;
+        margin-top: 47px;
+    }
+
+    .modalGreenleazeCollection  .title-modal {
+        font-family: Baloo;
+        font-size: 23px;
+        font-weight: 400;
+        line-height: 36.2px;
+        text-align: left;
+        margin-top: 0;
+
+    }
+
+    .modalGreenleazeCollection  .table {
+        margin-top: 20px;
+        font-family: Baloo;
+        font-size: 20px;
+        font-weight: 400;
+        line-height: 36.2px
+    }
+
+
+    @media screen and (max-width: 1200px) {
+        .modalGreenleazeCollection  .title-modal {
+            font-size: 17px;
+            text-align: center !important;
+        }
+
+        .modalGreenleazeCollection  .abo-title {
+            margin-top: 10px !important;
+            font-size: 20px;
+        }
+
+        .modalGreenleazeCollection  .table {
+            font-family: inherit!important;
+            font-size: 16px!important;
+            font-weight: 100!important;
+        }
+        .modalGreenleazeCollection  .modalContainer {
+            display: block !important;
+            padding: 0 !important;
+        }
+
+        .modalGreenleazeCollection  .text-modal {
+            display: none !important;
+        }
+
+        .modalGreenleazeCollection  .left {
+            margin: auto !important;
+            width: 100% !important;
+        }
+
+        .modalGreenleazeCollection  .left img {
+            display: none !important;
+        }
+
+        .modalGreenleazeCollection  .right {
+            margin: auto !important;
+            width: 100% !important;
+        }
+
+        .modalGreenleazeCollection  .right .slider-container {
+            width: 100% !important;
+        }
+    }
+</style>
+{% schema %}
+{
+  "name": "t:sections.main-collection-product-grid.name",
+  "class": "section",
+  "settings": [
+    {
+      "type": "range",
+      "id": "products_per_page",
+      "min": 8,
+      "max": 36,
+      "step": 4,
+      "default": 16,
+      "label": "t:sections.main-collection-product-grid.settings.products_per_page.label"
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "min": 1,
+      "max": 6,
+      "step": 1,
+      "default": 4,
+      "label": "t:sections.main-collection-product-grid.settings.columns_desktop.label"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "info": "t:sections.all.colors.has_cards_info",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.main-collection-product-grid.settings.header__3.content"
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "options": [
+        {
+          "value": "adapt",
+          "label": "t:sections.main-collection-product-grid.settings.image_ratio.options__1.label"
+        },
+        {
+          "value": "portrait",
+          "label": "t:sections.main-collection-product-grid.settings.image_ratio.options__2.label"
+        },
+        {
+          "value": "square",
+          "label": "t:sections.main-collection-product-grid.settings.image_ratio.options__3.label"
+        }
+      ],
+      "default": "adapt",
+      "label": "t:sections.main-collection-product-grid.settings.image_ratio.label"
+    },
+    {
+      "type": "select",
+      "id": "image_shape",
+      "options": [
+        {
+          "value": "default",
+          "label": "t:sections.all.image_shape.options__1.label"
+        },
+        {
+          "value": "arch",
+          "label": "t:sections.all.image_shape.options__2.label"
+        },
+        {
+          "value": "blob",
+          "label": "t:sections.all.image_shape.options__3.label"
+        },
+        {
+          "value": "chevronleft",
+          "label": "t:sections.all.image_shape.options__4.label"
+        },
+        {
+          "value": "chevronright",
+          "label": "t:sections.all.image_shape.options__5.label"
+        },
+        {
+          "value": "diamond",
+          "label": "t:sections.all.image_shape.options__6.label"
+        },
+        {
+          "value": "parallelogram",
+          "label": "t:sections.all.image_shape.options__7.label"
+        },
+        {
+          "value": "round",
+          "label": "t:sections.all.image_shape.options__8.label"
+        }
+      ],
+      "default": "default",
+      "label": "t:sections.all.image_shape.label",
+      "info": "t:sections.all.image_shape.info"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_secondary_image",
+      "default": false,
+      "label": "t:sections.main-collection-product-grid.settings.show_secondary_image.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_vendor",
+      "default": false,
+      "label": "t:sections.main-collection-product-grid.settings.show_vendor.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_rating",
+      "default": false,
+      "label": "t:sections.main-collection-product-grid.settings.show_rating.label",
+      "info": "t:sections.main-collection-product-grid.settings.show_rating.info"
+    },
+    {
+      "type": "select",
+      "id": "quick_add",
+      "default": "none",
+      "label": "t:sections.main-collection-product-grid.settings.quick_add.label",
+      "info": "t:sections.main-collection-product-grid.settings.quick_add.info",
+      "options": [
+        {
+          "value": "none",
+          "label": "t:sections.main-collection-product-grid.settings.quick_add.options.option_1"
+        },
+        {
+          "value": "standard",
+          "label": "t:sections.main-collection-product-grid.settings.quick_add.options.option_2"
+        },
+        {
+          "value": "bulk",
+          "label": "t:sections.main-collection-product-grid.settings.quick_add.options.option_3"
+        }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "t:sections.main-collection-product-grid.settings.header__1.content"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_filtering",
+      "default": true,
+      "label": "t:sections.main-collection-product-grid.settings.enable_filtering.label",
+      "info": "t:sections.main-collection-product-grid.settings.enable_filtering.info"
+    },
+    {
+      "type": "select",
+      "id": "filter_type",
+      "options": [
+        {
+          "value": "horizontal",
+          "label": "t:sections.main-collection-product-grid.settings.filter_type.options__1.label"
+        },
+        {
+          "value": "vertical",
+          "label": "t:sections.main-collection-product-grid.settings.filter_type.options__2.label"
+        },
+        {
+          "value": "drawer",
+          "label": "t:sections.main-collection-product-grid.settings.filter_type.options__3.label"
+        }
+      ],
+      "default": "horizontal",
+      "label": "t:sections.main-collection-product-grid.settings.filter_type.label",
+      "info": "t:sections.main-collection-product-grid.settings.filter_type.info"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_sorting",
+      "default": true,
+      "label": "t:sections.main-collection-product-grid.settings.enable_sorting.label"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.main-collection-product-grid.settings.header_mobile.content"
+    },
+    {
+      "type": "select",
+      "id": "columns_mobile",
+      "default": "2",
+      "label": "t:sections.main-collection-product-grid.settings.columns_mobile.label",
+      "options": [
+        {
+          "value": "1",
+          "label": "t:sections.main-collection-product-grid.settings.columns_mobile.options__1.label"
+        },
+        {
+          "value": "2",
+          "label": "t:sections.main-collection-product-grid.settings.columns_mobile.options__2.label"
+        }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "t:sections.all.padding.section_padding_heading"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_top",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_bottom",
+      "default": 36
+    }
+  ]
+}
+{% endschema %}
